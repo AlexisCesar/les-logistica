@@ -8,12 +8,12 @@ package gui;
  *
  * @author Yo
  */
-public class Oie extends javax.swing.JFrame {
+public class FrmCadastrarMotorista extends javax.swing.JFrame {
 
     /**
-     * Creates new form Oie
+     * Creates new form FrmCadastrarMotorista
      */
-    public Oie() {
+    public FrmCadastrarMotorista() {
 	initComponents();
     }
 
@@ -57,20 +57,20 @@ public class Oie extends javax.swing.JFrame {
 		}
 	    }
 	} catch (ClassNotFoundException ex) {
-	    java.util.logging.Logger.getLogger(Oie.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+	    java.util.logging.Logger.getLogger(FrmCadastrarMotorista.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
 	} catch (InstantiationException ex) {
-	    java.util.logging.Logger.getLogger(Oie.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+	    java.util.logging.Logger.getLogger(FrmCadastrarMotorista.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
 	} catch (IllegalAccessException ex) {
-	    java.util.logging.Logger.getLogger(Oie.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+	    java.util.logging.Logger.getLogger(FrmCadastrarMotorista.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
 	} catch (javax.swing.UnsupportedLookAndFeelException ex) {
-	    java.util.logging.Logger.getLogger(Oie.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+	    java.util.logging.Logger.getLogger(FrmCadastrarMotorista.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
 	}
 	//</editor-fold>
 
 	/* Create and display the form */
 	java.awt.EventQueue.invokeLater(new Runnable() {
 	    public void run() {
-		new Oie().setVisible(true);
+		new FrmCadastrarMotorista().setVisible(true);
 	    }
 	});
     }
