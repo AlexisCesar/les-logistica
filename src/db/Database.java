@@ -16,15 +16,12 @@ import java.sql.SQLException;
 public class Database {
     
     public Connection getConnection()throws SQLException {
-        String url = "jdbc:mysql://localhost:3306/loja"; //Nome da base de dados
-        String user = "root"; //nome do usuário do MySQL
-        String password = "root"; //senha do MySQL
+        String url = "jdbc:hsqldb:hsql://localhost/logistica";
+        String user = "SA";
+        String password = "";
 
-        Connection conexao = null;
-        
-        conexao = DriverManager.getConnection(url, user, password);
+        Connection conexao = DriverManager.getConnection(url, user, password);
         
         return conexao;
     }
-    
 }

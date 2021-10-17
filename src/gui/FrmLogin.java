@@ -5,6 +5,8 @@
  */
 package gui;
 
+import entities.Usuario;
+import entities.dao.implementation.UsuarioDao;
 import java.awt.Image;
 import java.awt.Toolkit;
 import java.awt.event.KeyEvent;
@@ -16,9 +18,6 @@ import javax.swing.JOptionPane;
  * @author ADM
  */
 public class FrmLogin extends javax.swing.JFrame {
-
-    private String usuario = "Flashion";
-    private String senha = "123";
     
     /**
      * Creates new form FrmLogin
@@ -150,13 +149,16 @@ public class FrmLogin extends javax.swing.JFrame {
         String usuario = txtUsuario.getText();
         String senha = String.valueOf(txtSenha.getPassword());
         
-        if(usuario.equals(this.usuario) && senha.equals(this.senha)){
+        UsuarioDao dao = new UsuarioDao();
+        
+        Usuario obj = dao.findById(usuario);
+        
+        if(usuario.equals(obj.getUsuario()) && senha.equals(obj.getSenha())){
             new FrmMenu().setVisible(true);
             this.dispose();
         } else {
             JOptionPane.showMessageDialog(this, "Usuário ou senha inválidos!", "Erro ao fazer login", JOptionPane.ERROR_MESSAGE);
         }
-        
     }//GEN-LAST:event_btnEntrarActionPerformed
 
     private void txtSenhaKeyPressed(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_txtSenhaKeyPressed
