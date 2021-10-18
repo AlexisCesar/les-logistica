@@ -5,6 +5,7 @@
  */
 package gui;
 
+import entities.dao.implementation.VeiculoDao;
 import java.awt.Image;
 import java.awt.Toolkit;
 import java.net.URL;
@@ -132,11 +133,12 @@ public class FrmMenu extends javax.swing.JFrame {
     }// </editor-fold>//GEN-END:initComponents
 
     private void btnSairActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnSairActionPerformed
-        System.exit(0);
+        new FrmLogin().setVisible(true);
+        this.dispose();
     }//GEN-LAST:event_btnSairActionPerformed
 
     private void btnCadastroVeiculoActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnCadastroVeiculoActionPerformed
-        new FrmCadastrarVeiculo().setVisible(true);
+        new FrmCadastrarVeiculo(new VeiculoDao()).setVisible(true);
         this.dispose();
     }//GEN-LAST:event_btnCadastroVeiculoActionPerformed
 

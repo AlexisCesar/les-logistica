@@ -9,15 +9,12 @@ import db.Database;
 import entities.Usuario;
 import entities.dao.IUsuarioDao;
 import java.util.List;
-import java.sql.Connection;
-import java.sql.SQLException;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.sql.Statement;
 
 /**
  *
@@ -35,10 +32,11 @@ public class UsuarioDao implements IUsuarioDao {
         
         Usuario obj = new Usuario();
         
+        Connection conexao = null;
         try {
-            Connection conexao = new Database().getConnection();
+            conexao = Database.getConnection();
             
-            PreparedStatement query = conexao.prepareStatement("SELECT * FROM Usuarios WHERE usuario = ?");
+            PreparedStatement query = conexao.prepareStatement("SELECT * FROM Usuarios WHERE usuario = ?;");
             query.setString(1, usuario);
             
             ResultSet retorno = query.executeQuery();
@@ -51,6 +49,8 @@ public class UsuarioDao implements IUsuarioDao {
             conexao.close();
         } catch (SQLException ex) {
             Logger.getLogger(UsuarioDao.class.getName()).log(Level.SEVERE, null, ex);
+        } finally {
+            Database.closeConnection(conexao);
         }
         
         return obj;
