@@ -104,7 +104,7 @@
     </Component>
     <Component class="javax.swing.JTextField" name="txtUsuario">
       <Properties>
-        <Property name="text" type="java.lang.String" value="Flashion"/>
+        <Property name="text" type="java.lang.String" value="sysadmin"/>
       </Properties>
     </Component>
     <Component class="javax.swing.JLabel" name="jLabel3">
@@ -138,7 +138,7 @@
     </Component>
     <Component class="javax.swing.JPasswordField" name="txtSenha">
       <Properties>
-        <Property name="text" type="java.lang.String" value="123"/>
+        <Property name="text" type="java.lang.String" value="sysadmin"/>
       </Properties>
       <Events>
         <EventHandler event="keyPressed" listener="java.awt.event.KeyListener" parameters="java.awt.event.KeyEvent" handler="txtSenhaKeyPressed"/>
