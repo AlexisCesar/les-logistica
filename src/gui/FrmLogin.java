@@ -59,7 +59,7 @@ public class FrmLogin extends javax.swing.JFrame {
 
         jLabel2.setText("Nome de usuário:");
 
-        txtUsuario.setText("Flashion");
+        txtUsuario.setText("sysadmin");
 
         jLabel3.setText("Senha:");
 
@@ -80,7 +80,7 @@ public class FrmLogin extends javax.swing.JFrame {
             }
         });
 
-        txtSenha.setText("123");
+        txtSenha.setText("sysadmin");
         txtSenha.addKeyListener(new java.awt.event.KeyAdapter() {
             public void keyPressed(java.awt.event.KeyEvent evt) {
                 txtSenhaKeyPressed(evt);

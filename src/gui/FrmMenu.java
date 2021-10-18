@@ -54,12 +54,27 @@ public class FrmMenu extends javax.swing.JFrame {
         lblTitulo.setText("Menu Principal");
 
         btnCadastroVeiculo.setText("Cadastro de Veículos");
+        btnCadastroVeiculo.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btnCadastroVeiculoActionPerformed(evt);
+            }
+        });
 
         btnCadastroMotorista.setText("Cadastro de Motoristas");
+        btnCadastroMotorista.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btnCadastroMotoristaActionPerformed(evt);
+            }
+        });
 
         btnConsultarNotasFiscais.setText("Consulta de Notas Fiscais");
 
         btnCadastroRomaneio.setText("Cadastro de Romaneio");
+        btnCadastroRomaneio.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btnCadastroRomaneioActionPerformed(evt);
+            }
+        });
 
         btnRastreamentoEntrega.setText("Rastreamento de Entrega");
 
@@ -119,6 +134,21 @@ public class FrmMenu extends javax.swing.JFrame {
     private void btnSairActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnSairActionPerformed
         System.exit(0);
     }//GEN-LAST:event_btnSairActionPerformed
+
+    private void btnCadastroVeiculoActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnCadastroVeiculoActionPerformed
+        new FrmCadastrarVeiculo().setVisible(true);
+        this.dispose();
+    }//GEN-LAST:event_btnCadastroVeiculoActionPerformed
+
+    private void btnCadastroMotoristaActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnCadastroMotoristaActionPerformed
+        new FrmCadastrarMotorista().setVisible(true);
+        this.dispose();
+    }//GEN-LAST:event_btnCadastroMotoristaActionPerformed
+
+    private void btnCadastroRomaneioActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnCadastroRomaneioActionPerformed
+        new frmRomaneio().setVisible(true);
+        this.dispose();
+    }//GEN-LAST:event_btnCadastroRomaneioActionPerformed
 
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
