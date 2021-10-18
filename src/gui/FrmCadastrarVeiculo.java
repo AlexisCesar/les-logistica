@@ -8,6 +8,7 @@ import java.sql.SQLException;
 import entities.Veiculo;
 import entities.dao.IVeiculoDao;
 import entities.dao.implementation.exceptions.DatabaseException;
+import gui.enums.EstadoOperacao;
 import java.util.List;
 import javax.swing.JOptionPane;
 import javax.swing.table.DefaultTableModel;
@@ -20,6 +21,8 @@ public class FrmCadastrarVeiculo extends javax.swing.JFrame {
 
     
     private IVeiculoDao dao;
+    private EstadoOperacao estadoOperacao;
+    
     /**
      * Creates new form FrmCadastrarVeiculo
      * @param dao
@@ -29,9 +32,10 @@ public class FrmCadastrarVeiculo extends javax.swing.JFrame {
         this.setLocationRelativeTo(null);
         
         this.dao = dao;
+        estadoOperacao = EstadoOperacao.OCIOSO;
         
+        habilitarCampos(false);
         atualizarTabela();
-        
     }
 
     /**
@@ -141,8 +145,18 @@ public class FrmCadastrarVeiculo extends javax.swing.JFrame {
         });
 
         btnAlterar.setText("Alterar");
+        btnAlterar.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btnAlterarActionPerformed(evt);
+            }
+        });
 
         btnExcluir.setText("Excluir");
+        btnExcluir.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btnExcluirActionPerformed(evt);
+            }
+        });
 
         btnExibirVeiculo.setText("Exibir Veiculo");
 
@@ -161,6 +175,11 @@ public class FrmCadastrarVeiculo extends javax.swing.JFrame {
         });
 
         btnCancelar.setText("Cancelar");
+        btnCancelar.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btnCancelarActionPerformed(evt);
+            }
+        });
 
         btnVoltar.setText("Voltar");
         btnVoltar.addActionListener(new java.awt.event.ActionListener() {
@@ -298,33 +317,14 @@ public class FrmCadastrarVeiculo extends javax.swing.JFrame {
     }// </editor-fold>//GEN-END:initComponents
 
     private void btnGravarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnGravarActionPerformed
-        if(!validarCampos())
-        {
-            JOptionPane.showMessageDialog(this, "Os dados preenchidos estão inválidos!", "Erro", JOptionPane.ERROR_MESSAGE);
-            return;
-        }
         
-        if(dao.findById(txtPlaca.getText()).getPlaca() != null){
-            JOptionPane.showMessageDialog(this, "Já existe um veículo com essa placa cadastrado!", "Erro", JOptionPane.ERROR_MESSAGE);
-            return;
-        }
+        if(estadoOperacao == EstadoOperacao.INSERINDO)
+            inserirRegistro();
+        else if (estadoOperacao == EstadoOperacao.EDITANDO)
+            editarRegistro();
+        else
+            JOptionPane.showMessageDialog(this, "Você não está inserindo ou editando nenhum registro.");
         
-        Veiculo obj = new Veiculo();
-        obj.setPlaca(txtPlaca.getText());
-        obj.setMarca(txtMarca.getText());
-        obj.setModelo(txtModelo.getText());
-        obj.setAno(Integer.parseInt(txtAno.getText()));
-        obj.setCapacidade(Double.parseDouble(txtCargaMax.getText()));
-        
-        try {
-            dao.insert(obj);
-        } catch (DatabaseException e) {
-            JOptionPane.showMessageDialog(this, "Não foi possível inserir o registro!", "Erro", JOptionPane.ERROR_MESSAGE);
-        }
-        
-        JOptionPane.showMessageDialog(this, "O registro foi inserido com sucesso!");
-        atualizarTabela();
-        limparCampos();
     }//GEN-LAST:event_btnGravarActionPerformed
 
     private void btnVoltarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnVoltarActionPerformed
@@ -334,7 +334,53 @@ public class FrmCadastrarVeiculo extends javax.swing.JFrame {
 
     private void btnIncluirActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnIncluirActionPerformed
         
+        if(estadoOperacao == EstadoOperacao.OCIOSO){
+            estadoOperacao = EstadoOperacao.INSERINDO;
+            habilitarCampos(true);
+        } else {
+            JOptionPane.showMessageDialog(this, """
+                                                Voc\u00ea j\u00e1 est\u00e1 inserindo ou editando algo!
+                                                Cancele ou grave o registro para iniciar uma nova opera\u00e7\u00e3o.""", "Erro", JOptionPane.WARNING_MESSAGE);
+        }
+        
     }//GEN-LAST:event_btnIncluirActionPerformed
+
+    private void btnCancelarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnCancelarActionPerformed
+        limparCampos();
+        habilitarCampos(false);
+        estadoOperacao = EstadoOperacao.OCIOSO;
+    }//GEN-LAST:event_btnCancelarActionPerformed
+
+    private void btnAlterarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnAlterarActionPerformed
+        
+        if(estadoOperacao == EstadoOperacao.OCIOSO){
+            estadoOperacao = EstadoOperacao.EDITANDO;
+            habilitarCampos(true);
+            txtPlaca.setEnabled(false);
+        } else {
+            JOptionPane.showMessageDialog(this, """
+                                                Voc\u00ea j\u00e1 est\u00e1 inserindo ou editando algo!
+                                                Cancele ou grave o registro para iniciar uma nova opera\u00e7\u00e3o.""", "Erro", JOptionPane.WARNING_MESSAGE);
+        }
+        
+    }//GEN-LAST:event_btnAlterarActionPerformed
+
+    private void btnExcluirActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnExcluirActionPerformed
+        DefaultTableModel model = (DefaultTableModel) tblVeiculos.getModel();
+        
+        if(tblVeiculos.getSelectedRow() == -1){
+            JOptionPane.showMessageDialog(this, "Primeiro, selecione um registro na tabela.");
+            return;
+        }
+        
+        String placa = String.valueOf(model.getValueAt(tblVeiculos.getSelectedRow(), 0));
+        
+        if(JOptionPane.showConfirmDialog(this, "Deseja excluir o veículo de placa " + placa + "?", "Excluir", JOptionPane.YES_NO_OPTION) == JOptionPane.YES_OPTION) {
+            dao.delete(placa);
+            JOptionPane.showMessageDialog(this, "O registro foi removido.");
+            atualizarTabela();
+        }
+    }//GEN-LAST:event_btnExcluirActionPerformed
 
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
@@ -414,6 +460,49 @@ public class FrmCadastrarVeiculo extends javax.swing.JFrame {
         txtModelo.setText("");
         txtAno.setText("");
         txtCargaMax.setText("");
+    }
+    
+    private void habilitarCampos(boolean condicao) {
+        txtPlaca.setEnabled(condicao);
+        txtMarca.setEnabled(condicao);
+        txtModelo.setEnabled(condicao);
+        txtAno.setEnabled(condicao);
+        txtCargaMax.setEnabled(condicao);
+    }
+
+    private void inserirRegistro() {
+        if(!validarCampos())
+        {
+            JOptionPane.showMessageDialog(this, "Os dados preenchidos estão inválidos!", "Erro", JOptionPane.ERROR_MESSAGE);
+            return;
+        }
+        
+        if(dao.findById(txtPlaca.getText()).getPlaca() != null){
+            JOptionPane.showMessageDialog(this, "Já existe um veículo com essa placa cadastrado!", "Erro", JOptionPane.ERROR_MESSAGE);
+            return;
+        }
+        
+        Veiculo obj = new Veiculo();
+        obj.setPlaca(txtPlaca.getText());
+        obj.setMarca(txtMarca.getText());
+        obj.setModelo(txtModelo.getText());
+        obj.setAno(Integer.parseInt(txtAno.getText()));
+        obj.setCapacidade(Double.parseDouble(txtCargaMax.getText()));
+        
+        try {
+            dao.insert(obj);
+        } catch (DatabaseException e) {
+            JOptionPane.showMessageDialog(this, "Não foi possível inserir o registro!", "Erro", JOptionPane.ERROR_MESSAGE);
+        }
+        
+        JOptionPane.showMessageDialog(this, "O registro foi inserido com sucesso!");
+        atualizarTabela();
+        limparCampos();
+        estadoOperacao = EstadoOperacao.OCIOSO;
+    }
+
+    private void editarRegistro() {
+        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
 
 }

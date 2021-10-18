@@ -3,12 +3,14 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package utils;
+package gui.enums;
 
 /**
  *
  * @author ADM
  */
-public class Utils {
-    
+public enum EstadoOperacao {
+    OCIOSO,
+    INSERINDO,
+    EDITANDO
 }
