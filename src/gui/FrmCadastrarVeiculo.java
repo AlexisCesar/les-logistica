@@ -4,10 +4,10 @@
  */
 package gui;
 
-import java.sql.SQLException;
 import entities.Veiculo;
 import entities.dao.IVeiculoDao;
 import entities.dao.implementation.exceptions.DatabaseException;
+import gui.enums.EstadoOperacao;
 import java.util.List;
 import javax.swing.JOptionPane;
 import javax.swing.table.DefaultTableModel;
@@ -20,6 +20,8 @@ public class FrmCadastrarVeiculo extends javax.swing.JFrame {
 
     
     private IVeiculoDao dao;
+    private EstadoOperacao estadoOperacao;
+    
     /**
      * Creates new form FrmCadastrarVeiculo
      * @param dao
@@ -29,9 +31,10 @@ public class FrmCadastrarVeiculo extends javax.swing.JFrame {
         this.setLocationRelativeTo(null);
         
         this.dao = dao;
+        estadoOperacao = EstadoOperacao.OCIOSO;
         
+        habilitarCampos(false);
         atualizarTabela();
-        
     }
 
     /**
@@ -49,7 +52,6 @@ public class FrmCadastrarVeiculo extends javax.swing.JFrame {
         btnIncluir = new javax.swing.JButton();
         btnAlterar = new javax.swing.JButton();
         btnExcluir = new javax.swing.JButton();
-        btnExibirVeiculo = new javax.swing.JButton();
         lblProcurarPor = new javax.swing.JLabel();
         txtMarca = new javax.swing.JTextField();
         cbxBusca = new javax.swing.JComboBox<>();
@@ -65,6 +67,7 @@ public class FrmCadastrarVeiculo extends javax.swing.JFrame {
         lblPlaca = new javax.swing.JLabel();
         lblCapCarga = new javax.swing.JLabel();
         txtAno = new javax.swing.JFormattedTextField();
+        btnCancelarPesquisa = new javax.swing.JButton();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
 
@@ -132,6 +135,11 @@ public class FrmCadastrarVeiculo extends javax.swing.JFrame {
         lblPesquisar.setText("Pesquisar");
 
         btnPesquisar.setText("Pesquisar");
+        btnPesquisar.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btnPesquisarActionPerformed(evt);
+            }
+        });
 
         btnIncluir.setText("Incluir");
         btnIncluir.addActionListener(new java.awt.event.ActionListener() {
@@ -141,15 +149,24 @@ public class FrmCadastrarVeiculo extends javax.swing.JFrame {
         });
 
         btnAlterar.setText("Alterar");
+        btnAlterar.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btnAlterarActionPerformed(evt);
+            }
+        });
 
         btnExcluir.setText("Excluir");
-
-        btnExibirVeiculo.setText("Exibir Veiculo");
+        btnExcluir.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btnExcluirActionPerformed(evt);
+            }
+        });
 
         lblProcurarPor.setText("Procurar por:");
         lblProcurarPor.setToolTipText("");
 
-        cbxBusca.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "Marca", "Modelo", "Ano", "Placa do Carro", "Carga Maxima", "Peso", "Tipo de Carteira" }));
+        cbxBusca.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "Placa", "Marca", "Modelo", "Ano", "Capacidade" }));
+        cbxBusca.setEnabled(false);
 
         txtModelo.setToolTipText("");
 
@@ -161,6 +178,11 @@ public class FrmCadastrarVeiculo extends javax.swing.JFrame {
         });
 
         btnCancelar.setText("Cancelar");
+        btnCancelar.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btnCancelarActionPerformed(evt);
+            }
+        });
 
         btnVoltar.setText("Voltar");
         btnVoltar.addActionListener(new java.awt.event.ActionListener() {
@@ -185,6 +207,13 @@ public class FrmCadastrarVeiculo extends javax.swing.JFrame {
             ex.printStackTrace();
         }
 
+        btnCancelarPesquisa.setText("Cancelar");
+        btnCancelarPesquisa.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btnCancelarPesquisaActionPerformed(evt);
+            }
+        });
+
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
         layout.setHorizontalGroup(
@@ -193,7 +222,7 @@ public class FrmCadastrarVeiculo extends javax.swing.JFrame {
                 .addContainerGap()
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
                     .addGroup(layout.createSequentialGroup()
-                        .addComponent(btnCancelar, javax.swing.GroupLayout.PREFERRED_SIZE, 75, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addComponent(btnCancelar)
                         .addGap(47, 47, 47)
                         .addComponent(btnGravar))
                     .addGroup(layout.createSequentialGroup()
@@ -230,16 +259,18 @@ public class FrmCadastrarVeiculo extends javax.swing.JFrame {
                                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                                 .addComponent(txtPesquisar)))
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addComponent(btnPesquisar, javax.swing.GroupLayout.PREFERRED_SIZE, 94, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                        .addComponent(lblProcurarPor)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addComponent(cbxBusca, javax.swing.GroupLayout.PREFERRED_SIZE, 73, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                             .addGroup(layout.createSequentialGroup()
-                                .addComponent(btnPesquisar, javax.swing.GroupLayout.PREFERRED_SIZE, 94, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                                .addComponent(btnVoltar, javax.swing.GroupLayout.PREFERRED_SIZE, 88, javax.swing.GroupLayout.PREFERRED_SIZE))
+                            .addGroup(layout.createSequentialGroup()
                                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                                .addComponent(lblProcurarPor)
-                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                                .addComponent(cbxBusca, javax.swing.GroupLayout.PREFERRED_SIZE, 73, javax.swing.GroupLayout.PREFERRED_SIZE))
-                            .addComponent(btnExibirVeiculo))
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                        .addComponent(btnVoltar, javax.swing.GroupLayout.PREFERRED_SIZE, 88, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                                .addComponent(btnCancelarPesquisa)))))
                 .addContainerGap())
         );
         layout.setVerticalGroup(
@@ -252,8 +283,7 @@ public class FrmCadastrarVeiculo extends javax.swing.JFrame {
                         .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                             .addComponent(btnIncluir)
                             .addComponent(btnAlterar)
-                            .addComponent(btnExcluir)
-                            .addComponent(btnExibirVeiculo)))
+                            .addComponent(btnExcluir)))
                     .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                         .addComponent(lblPlaca)
                         .addComponent(txtPlaca, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)))
@@ -265,7 +295,8 @@ public class FrmCadastrarVeiculo extends javax.swing.JFrame {
                             .addComponent(txtPesquisar, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                             .addComponent(btnPesquisar)
                             .addComponent(lblProcurarPor)
-                            .addComponent(cbxBusca, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                            .addComponent(cbxBusca, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addComponent(btnCancelarPesquisa)))
                     .addGroup(layout.createSequentialGroup()
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                         .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
@@ -298,33 +329,14 @@ public class FrmCadastrarVeiculo extends javax.swing.JFrame {
     }// </editor-fold>//GEN-END:initComponents
 
     private void btnGravarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnGravarActionPerformed
-        if(!validarCampos())
-        {
-            JOptionPane.showMessageDialog(this, "Os dados preenchidos estão inválidos!", "Erro", JOptionPane.ERROR_MESSAGE);
-            return;
-        }
         
-        if(dao.findById(txtPlaca.getText()).getPlaca() != null){
-            JOptionPane.showMessageDialog(this, "Já existe um veículo com essa placa cadastrado!", "Erro", JOptionPane.ERROR_MESSAGE);
-            return;
-        }
+        if(estadoOperacao == EstadoOperacao.INSERINDO)
+            inserirRegistro();
+        else if (estadoOperacao == EstadoOperacao.EDITANDO)
+            editarRegistro();
+        else
+            JOptionPane.showMessageDialog(this, "Você não está inserindo ou editando nenhum registro.");
         
-        Veiculo obj = new Veiculo();
-        obj.setPlaca(txtPlaca.getText());
-        obj.setMarca(txtMarca.getText());
-        obj.setModelo(txtModelo.getText());
-        obj.setAno(Integer.parseInt(txtAno.getText()));
-        obj.setCapacidade(Double.parseDouble(txtCargaMax.getText()));
-        
-        try {
-            dao.insert(obj);
-        } catch (DatabaseException e) {
-            JOptionPane.showMessageDialog(this, "Não foi possível inserir o registro!", "Erro", JOptionPane.ERROR_MESSAGE);
-        }
-        
-        JOptionPane.showMessageDialog(this, "O registro foi inserido com sucesso!");
-        atualizarTabela();
-        limparCampos();
     }//GEN-LAST:event_btnGravarActionPerformed
 
     private void btnVoltarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnVoltarActionPerformed
@@ -334,14 +346,93 @@ public class FrmCadastrarVeiculo extends javax.swing.JFrame {
 
     private void btnIncluirActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnIncluirActionPerformed
         
+        if(estadoOperacao == EstadoOperacao.OCIOSO){
+            estadoOperacao = EstadoOperacao.INSERINDO;
+            habilitarCampos(true);
+        } else {
+            JOptionPane.showMessageDialog(this, """
+                                                Voc\u00ea j\u00e1 est\u00e1 inserindo ou editando algo!
+                                                Cancele ou grave o registro para iniciar uma nova opera\u00e7\u00e3o.""", "Erro", JOptionPane.WARNING_MESSAGE);
+        }
+        
     }//GEN-LAST:event_btnIncluirActionPerformed
+
+    private void btnCancelarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnCancelarActionPerformed
+        limparCampos();
+        habilitarCampos(false);
+        estadoOperacao = EstadoOperacao.OCIOSO;
+    }//GEN-LAST:event_btnCancelarActionPerformed
+
+    private void btnAlterarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnAlterarActionPerformed
+        
+        DefaultTableModel model = (DefaultTableModel) tblVeiculos.getModel();
+        
+        if(tblVeiculos.getSelectedRow() == -1){
+            JOptionPane.showMessageDialog(this, "Primeiro, selecione um registro na tabela.");
+            return;
+        }
+        
+        String placa = String.valueOf(model.getValueAt(tblVeiculos.getSelectedRow(), 0));
+        
+        if(estadoOperacao == EstadoOperacao.OCIOSO){
+            estadoOperacao = EstadoOperacao.EDITANDO;
+            habilitarCampos(true);
+            txtPlaca.setEnabled(false);
+            preencherCampos(placa);
+        } else {
+            JOptionPane.showMessageDialog(this, """
+                                                Voc\u00ea j\u00e1 est\u00e1 inserindo ou editando algo!
+                                                Cancele ou grave o registro para iniciar uma nova opera\u00e7\u00e3o.""", "Erro", JOptionPane.WARNING_MESSAGE);
+        }
+        
+    }//GEN-LAST:event_btnAlterarActionPerformed
+
+    private void btnExcluirActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnExcluirActionPerformed
+        DefaultTableModel model = (DefaultTableModel) tblVeiculos.getModel();
+        
+        if(tblVeiculos.getSelectedRow() == -1){
+            JOptionPane.showMessageDialog(this, "Primeiro, selecione um registro na tabela.");
+            return;
+        }
+        
+        String placa = String.valueOf(model.getValueAt(tblVeiculos.getSelectedRow(), 0));
+        
+        if(JOptionPane.showConfirmDialog(this, "Deseja excluir o veículo de placa " + placa + "?", "Excluir", JOptionPane.YES_NO_OPTION) == JOptionPane.YES_OPTION) {
+            dao.delete(placa);
+            JOptionPane.showMessageDialog(this, "O registro foi removido.");
+            atualizarTabela();
+        }
+    }//GEN-LAST:event_btnExcluirActionPerformed
+
+    private void btnPesquisarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnPesquisarActionPerformed
+        DefaultTableModel model = (DefaultTableModel) tblVeiculos.getModel();
+        limparTabela(model);
+        
+        Veiculo obj = dao.findById(txtPesquisar.getText());
+        
+        if(obj.getPlaca() == null)
+            return;
+        
+        model.addRow(new String[] {
+            obj.getPlaca(),
+            obj.getMarca(),
+            obj.getModelo(),
+            String.valueOf(obj.getAno()),
+            String.valueOf(obj.getCapacidade())
+        });
+        
+    }//GEN-LAST:event_btnPesquisarActionPerformed
+
+    private void btnCancelarPesquisaActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnCancelarPesquisaActionPerformed
+        atualizarTabela();
+    }//GEN-LAST:event_btnCancelarPesquisaActionPerformed
 
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton btnAlterar;
     private javax.swing.JButton btnCancelar;
+    private javax.swing.JButton btnCancelarPesquisa;
     private javax.swing.JButton btnExcluir;
-    private javax.swing.JButton btnExibirVeiculo;
     private javax.swing.JButton btnGravar;
     private javax.swing.JButton btnIncluir;
     private javax.swing.JButton btnPesquisar;
@@ -414,6 +505,80 @@ public class FrmCadastrarVeiculo extends javax.swing.JFrame {
         txtModelo.setText("");
         txtAno.setText("");
         txtCargaMax.setText("");
+    }
+    
+    private void habilitarCampos(boolean condicao) {
+        txtPlaca.setEnabled(condicao);
+        txtMarca.setEnabled(condicao);
+        txtModelo.setEnabled(condicao);
+        txtAno.setEnabled(condicao);
+        txtCargaMax.setEnabled(condicao);
+    }
+
+    private void inserirRegistro() {
+        if(!validarCampos())
+        {
+            JOptionPane.showMessageDialog(this, "Os dados preenchidos estão inválidos!", "Erro", JOptionPane.ERROR_MESSAGE);
+            return;
+        }
+        
+        if(dao.findById(txtPlaca.getText()).getPlaca() != null){
+            JOptionPane.showMessageDialog(this, "Já existe um veículo com essa placa cadastrado!", "Erro", JOptionPane.ERROR_MESSAGE);
+            return;
+        }
+        
+        Veiculo obj = new Veiculo();
+        obj.setPlaca(txtPlaca.getText());
+        obj.setMarca(txtMarca.getText());
+        obj.setModelo(txtModelo.getText());
+        obj.setAno(Integer.parseInt(txtAno.getText()));
+        obj.setCapacidade(Double.parseDouble(txtCargaMax.getText()));
+        
+        try {
+            dao.insert(obj);
+        } catch (DatabaseException e) {
+            JOptionPane.showMessageDialog(this, "Não foi possível inserir o registro!", "Erro", JOptionPane.ERROR_MESSAGE);
+        }
+        
+        JOptionPane.showMessageDialog(this, "O registro foi inserido com sucesso!");
+        atualizarTabela();
+        limparCampos();
+        estadoOperacao = EstadoOperacao.OCIOSO;
+    }
+
+    private void editarRegistro() {
+        if(!validarCampos())
+        {
+            JOptionPane.showMessageDialog(this, "Os dados preenchidos estão inválidos!", "Erro", JOptionPane.ERROR_MESSAGE);
+            return;
+        }
+        
+        Veiculo obj = new Veiculo();
+        obj.setPlaca(txtPlaca.getText());
+        obj.setMarca(txtMarca.getText());
+        obj.setModelo(txtModelo.getText());
+        obj.setAno(Integer.parseInt(txtAno.getText()));
+        obj.setCapacidade(Double.parseDouble(txtCargaMax.getText()));
+        
+        try {
+            dao.update(obj);
+        } catch (DatabaseException e) {
+            JOptionPane.showMessageDialog(this, "Não foi possível editar o registro!", "Erro", JOptionPane.ERROR_MESSAGE);
+        }
+        
+        JOptionPane.showMessageDialog(this, "O registro foi editado com sucesso!");
+        atualizarTabela();
+        limparCampos();
+        estadoOperacao = EstadoOperacao.OCIOSO;
+    }
+
+    private void preencherCampos(String placa) {
+        Veiculo obj = dao.findById(placa);
+        txtPlaca.setText(obj.getPlaca());
+        txtMarca.setText(obj.getMarca());
+        txtModelo.setText(obj.getModelo());
+        txtAno.setText(String.valueOf(obj.getAno()));
+        txtCargaMax.setText(String.valueOf(obj.getCapacidade()));
     }
 
 }
