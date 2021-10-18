@@ -15,7 +15,7 @@ import java.sql.SQLException;
  */
 public class Database {
     
-    public Connection getConnection()throws SQLException {
+    public static Connection getConnection()throws SQLException {
         String prefixo = "jdbc:hsqldb:file:";
         String url = System.getProperty("user.dir") + "\\bancoDados\\";
         String banco = "flashion";
@@ -27,5 +27,13 @@ public class Database {
         Connection conexao = DriverManager.getConnection(url, user, password);
         
         return conexao;
+    }
+    
+    public static void closeConnection(Connection conexao){
+        if(conexao != null)
+            try {
+                conexao.close();
+        } catch (SQLException ex) {
+        }
     }
 }

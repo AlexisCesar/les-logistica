@@ -3,21 +3,16 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package logistica;
-
-import gui.FrmLogin;
+package entities.dao.implementation.exceptions;
 
 /**
  *
  * @author ADM
  */
-public class Program {
-
-    /**
-     * @param args the command line arguments
-     */
-    public static void main(String[] args) {
-        new FrmLogin().setVisible(true);
+public class RegisterNotFoundException extends RuntimeException {
+    
+    public RegisterNotFoundException(String message) {
+        super(message);
     }
     
 }
