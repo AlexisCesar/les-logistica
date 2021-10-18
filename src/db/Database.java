@@ -26,12 +26,6 @@ public class Database {
         
         url = prefixo + url + banco;
         
-        try {
-            Class.forName("org.hsqldb.jdbcDriver");
-        } catch (ClassNotFoundException ex) {
-            Logger.getLogger(Database.class.getName()).log(Level.SEVERE, null, ex);
-        }
-        
         Connection conexao = DriverManager.getConnection(url, user, password);
         
         return conexao;
