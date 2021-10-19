@@ -4,7 +4,14 @@
  */
 package gui;
 
+import entities.Motorista;
 import entities.dao.IMotoristaDao;
+import entities.dao.implementation.exceptions.DatabaseException;
+import gui.enums.EstadoOperacao;
+import gui.utils.Utils;
+import java.util.List;
+import javax.swing.JOptionPane;
+import javax.swing.table.DefaultTableModel;
 
 /**
  *
@@ -13,6 +20,7 @@ import entities.dao.IMotoristaDao;
 public class FrmCadastrarMotorista extends javax.swing.JFrame {
 
     private IMotoristaDao dao;
+    private EstadoOperacao estadoOperacao;
     
     /**
      * Creates new form FrmCadastrarMotorista
@@ -22,6 +30,10 @@ public class FrmCadastrarMotorista extends javax.swing.JFrame {
         this.setLocationRelativeTo(null);
         
         this.dao = dao;
+        this.estadoOperacao = EstadoOperacao.OCIOSO;
+        
+        habilitarCampos(false);
+        atualizarTabela();
     }
 
     /**
@@ -39,7 +51,7 @@ public class FrmCadastrarMotorista extends javax.swing.JFrame {
         btnCancelar = new javax.swing.JButton();
         btnVoltar = new javax.swing.JButton();
         jScrollPane2 = new javax.swing.JScrollPane();
-        tblVeiculos = new javax.swing.JTable();
+        tblMotoristas = new javax.swing.JTable();
         lblId = new javax.swing.JLabel();
         lblPesquisar = new javax.swing.JLabel();
         txtPesquisar = new javax.swing.JTextField();
@@ -50,10 +62,13 @@ public class FrmCadastrarMotorista extends javax.swing.JFrame {
         lblTipoCarteira = new javax.swing.JLabel();
         btnExcluir = new javax.swing.JButton();
         lblProcurarPor = new javax.swing.JLabel();
+        btnCancelarPesquisa = new javax.swing.JButton();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
 
-        cbxBusca.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "Nome" }));
+        txtId.setEditable(false);
+
+        cbxBusca.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "ID", "Nome" }));
         cbxBusca.setEnabled(false);
 
         cbxTipoCarteira.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "A", "B", "C", "D", "E" }));
@@ -66,6 +81,11 @@ public class FrmCadastrarMotorista extends javax.swing.JFrame {
         });
 
         btnCancelar.setText("Cancelar");
+        btnCancelar.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btnCancelarActionPerformed(evt);
+            }
+        });
 
         btnVoltar.setText("Voltar");
         btnVoltar.addActionListener(new java.awt.event.ActionListener() {
@@ -74,7 +94,7 @@ public class FrmCadastrarMotorista extends javax.swing.JFrame {
             }
         });
 
-        tblVeiculos.setModel(new javax.swing.table.DefaultTableModel(
+        tblMotoristas.setModel(new javax.swing.table.DefaultTableModel(
             new Object [][] {
                 {null, null, null},
                 {null, null, null},
@@ -133,7 +153,7 @@ public class FrmCadastrarMotorista extends javax.swing.JFrame {
                 return canEdit [columnIndex];
             }
         });
-        jScrollPane2.setViewportView(tblVeiculos);
+        jScrollPane2.setViewportView(tblMotoristas);
 
         lblId.setText("ID:");
 
@@ -142,17 +162,44 @@ public class FrmCadastrarMotorista extends javax.swing.JFrame {
         lblNome.setText("Nome:");
 
         btnPesquisar.setText("Pesquisar");
+        btnPesquisar.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btnPesquisarActionPerformed(evt);
+            }
+        });
 
         btnIncluir.setText("Incluir");
+        btnIncluir.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btnIncluirActionPerformed(evt);
+            }
+        });
 
         btnAlterar.setText("Alterar");
+        btnAlterar.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btnAlterarActionPerformed(evt);
+            }
+        });
 
         lblTipoCarteira.setText("Tipo de Carteira:");
 
         btnExcluir.setText("Excluir");
+        btnExcluir.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btnExcluirActionPerformed(evt);
+            }
+        });
 
         lblProcurarPor.setText("Procurar por:");
         lblProcurarPor.setToolTipText("");
+
+        btnCancelarPesquisa.setText("Cancelar");
+        btnCancelarPesquisa.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btnCancelarPesquisaActionPerformed(evt);
+            }
+        });
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
@@ -201,8 +248,13 @@ public class FrmCadastrarMotorista extends javax.swing.JFrame {
                         .addComponent(lblProcurarPor)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                         .addComponent(cbxBusca, javax.swing.GroupLayout.PREFERRED_SIZE, 73, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                        .addComponent(btnVoltar, javax.swing.GroupLayout.PREFERRED_SIZE, 88, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                            .addGroup(layout.createSequentialGroup()
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                                .addComponent(btnVoltar, javax.swing.GroupLayout.PREFERRED_SIZE, 88, javax.swing.GroupLayout.PREFERRED_SIZE))
+                            .addGroup(layout.createSequentialGroup()
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                                .addComponent(btnCancelarPesquisa)))))
                 .addContainerGap())
         );
         layout.setVerticalGroup(
@@ -223,7 +275,8 @@ public class FrmCadastrarMotorista extends javax.swing.JFrame {
                             .addComponent(txtPesquisar, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                             .addComponent(btnPesquisar)
                             .addComponent(lblProcurarPor)
-                            .addComponent(cbxBusca, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                            .addComponent(cbxBusca, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addComponent(btnCancelarPesquisa))
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                         .addComponent(jScrollPane2, javax.swing.GroupLayout.PREFERRED_SIZE, 346, javax.swing.GroupLayout.PREFERRED_SIZE))
                     .addGroup(javax.swing.GroupLayout.Alignment.LEADING, layout.createSequentialGroup()
@@ -250,7 +303,12 @@ public class FrmCadastrarMotorista extends javax.swing.JFrame {
     }// </editor-fold>//GEN-END:initComponents
 
     private void btnGravarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnGravarActionPerformed
-        // TODO add your handling code here:
+        if(estadoOperacao == EstadoOperacao.INSERINDO)
+            inserirRegistro();
+        else if (estadoOperacao == EstadoOperacao.EDITANDO)
+            editarRegistro();
+        else
+            JOptionPane.showMessageDialog(this, "Você não está inserindo ou editando nenhum registro.");
     }//GEN-LAST:event_btnGravarActionPerformed
 
     private void btnVoltarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnVoltarActionPerformed
@@ -258,10 +316,96 @@ public class FrmCadastrarMotorista extends javax.swing.JFrame {
         this.dispose();
     }//GEN-LAST:event_btnVoltarActionPerformed
 
+    private void btnCancelarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnCancelarActionPerformed
+        limparCampos();
+        habilitarCampos(false);
+        estadoOperacao = EstadoOperacao.OCIOSO;
+    }//GEN-LAST:event_btnCancelarActionPerformed
+
+    private void btnPesquisarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnPesquisarActionPerformed
+        DefaultTableModel model = (DefaultTableModel) tblMotoristas.getModel();
+        Utils.limparTabela(model);
+        
+        int id;
+        try {
+            id = Integer.parseInt(txtPesquisar.getText());
+        } catch (NumberFormatException e) {
+            JOptionPane.showMessageDialog(this, "Insira um número de ID válido!", "Erro", JOptionPane.ERROR_MESSAGE);
+            return;
+        }
+        
+        Motorista obj = dao.findById(id);
+        
+        if(obj.getId() == null)
+            return;
+        
+        model.addRow(new String[] {
+            String.valueOf(obj.getId()),
+            obj.getNome(),
+            String.valueOf(obj.getCategoriaCnh())
+        });
+    }//GEN-LAST:event_btnPesquisarActionPerformed
+
+    private void btnIncluirActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnIncluirActionPerformed
+        if(estadoOperacao == EstadoOperacao.OCIOSO){
+            estadoOperacao = EstadoOperacao.INSERINDO;
+            habilitarCampos(true);
+        } else {
+            JOptionPane.showMessageDialog(this, """
+                                                Voc\u00ea j\u00e1 est\u00e1 inserindo ou editando algo!
+                                                Cancele ou grave o registro para iniciar uma nova opera\u00e7\u00e3o.""", "Erro", JOptionPane.WARNING_MESSAGE);
+        }
+    }//GEN-LAST:event_btnIncluirActionPerformed
+
+    private void btnAlterarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnAlterarActionPerformed
+        DefaultTableModel model = (DefaultTableModel) tblMotoristas.getModel();
+        
+        if(tblMotoristas.getSelectedRow() == -1){
+            JOptionPane.showMessageDialog(this, "Primeiro, selecione um registro na tabela.");
+            return;
+        }
+        
+        Integer id = Integer.parseInt(String.valueOf(model.getValueAt(tblMotoristas.getSelectedRow(), 0)));
+        
+        if(estadoOperacao == EstadoOperacao.OCIOSO){
+            estadoOperacao = EstadoOperacao.EDITANDO;
+            habilitarCampos(true);
+            txtId.setEnabled(false);
+            preencherCampos(id);
+        } else {
+            JOptionPane.showMessageDialog(this, """
+                                                Voc\u00ea j\u00e1 est\u00e1 inserindo ou editando algo!
+                                                Cancele ou grave o registro para iniciar uma nova opera\u00e7\u00e3o.""", "Erro", JOptionPane.WARNING_MESSAGE);
+        }
+    }//GEN-LAST:event_btnAlterarActionPerformed
+
+    private void btnExcluirActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnExcluirActionPerformed
+        DefaultTableModel model = (DefaultTableModel) tblMotoristas.getModel();
+        
+        if(tblMotoristas.getSelectedRow() == -1){
+            JOptionPane.showMessageDialog(this, "Primeiro, selecione um registro na tabela.");
+            return;
+        }
+        
+        Integer id = Integer.parseInt(String.valueOf(model.getValueAt(tblMotoristas.getSelectedRow(), 0)));
+        
+        if(JOptionPane.showConfirmDialog(this, "Deseja excluir o motorista de ID " + id + "?", "Excluir", JOptionPane.YES_NO_OPTION) == JOptionPane.YES_OPTION) {
+            dao.delete(id);
+            JOptionPane.showMessageDialog(this, "O registro foi removido.");
+            atualizarTabela();
+        }
+    }//GEN-LAST:event_btnExcluirActionPerformed
+
+    private void btnCancelarPesquisaActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnCancelarPesquisaActionPerformed
+        atualizarTabela();
+        txtPesquisar.setText("");
+    }//GEN-LAST:event_btnCancelarPesquisaActionPerformed
+
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton btnAlterar;
     private javax.swing.JButton btnCancelar;
+    private javax.swing.JButton btnCancelarPesquisa;
     private javax.swing.JButton btnExcluir;
     private javax.swing.JButton btnGravar;
     private javax.swing.JButton btnIncluir;
@@ -275,9 +419,95 @@ public class FrmCadastrarMotorista extends javax.swing.JFrame {
     private javax.swing.JLabel lblPesquisar;
     private javax.swing.JLabel lblProcurarPor;
     private javax.swing.JLabel lblTipoCarteira;
-    private javax.swing.JTable tblVeiculos;
+    private javax.swing.JTable tblMotoristas;
     private javax.swing.JTextField txtId;
     private javax.swing.JTextField txtNome;
     private javax.swing.JTextField txtPesquisar;
     // End of variables declaration//GEN-END:variables
+
+    private void habilitarCampos(boolean b) {
+        txtId.setEnabled(b);
+        txtNome.setEnabled(b);
+        cbxTipoCarteira.setEnabled(b);
+    }
+
+    private void atualizarTabela() {
+        DefaultTableModel model = (DefaultTableModel) tblMotoristas.getModel();
+        Utils.limparTabela(model);
+        
+        List<Motorista> motoristas = dao.findAll();
+        
+        for(Motorista motorista : motoristas) {
+            model.addRow(new String[] {
+                String.valueOf(motorista.getId()),
+                motorista.getNome(),
+                String.valueOf(motorista.getCategoriaCnh())
+            });
+        }
+    }
+
+    private void limparCampos() {
+        txtId.setText("");
+        txtNome.setText("");
+        cbxTipoCarteira.setSelectedIndex(0);
+    }
+
+    private void preencherCampos(Integer id) {
+        Motorista obj = dao.findById(id);
+        txtId.setText(String.valueOf(obj.getId()));
+        txtNome.setText(obj.getNome());
+        cbxTipoCarteira.setSelectedItem(obj.getCategoriaCnh());
+    }
+
+    private void inserirRegistro() {
+        if(!validarCampos())
+        {
+            JOptionPane.showMessageDialog(this, "Os dados preenchidos estão inválidos!", "Erro", JOptionPane.ERROR_MESSAGE);
+            return;
+        }
+        
+        Motorista obj = new Motorista();
+        obj.setNome(txtNome.getText());
+        obj.setCategoriaCnh(String.valueOf(cbxTipoCarteira.getSelectedItem()).charAt(0));
+        
+        try {
+            dao.insert(obj);
+        } catch (DatabaseException e) {
+            JOptionPane.showMessageDialog(this, "Não foi possível inserir o registro!", "Erro", JOptionPane.ERROR_MESSAGE);
+        }
+        
+        JOptionPane.showMessageDialog(this, "O registro foi inserido com sucesso!");
+        atualizarTabela();
+        limparCampos();
+        estadoOperacao = EstadoOperacao.OCIOSO;
+    }
+
+    private void editarRegistro() {
+        if(!validarCampos())
+        {
+            JOptionPane.showMessageDialog(this, "Os dados preenchidos estão inválidos!", "Erro", JOptionPane.ERROR_MESSAGE);
+            return;
+        }
+        
+        Motorista obj = new Motorista();
+        obj.setId(Integer.parseInt(txtId.getText()));
+        obj.setNome(txtNome.getText());
+        obj.setCategoriaCnh(String.valueOf(cbxTipoCarteira.getSelectedItem()).charAt(0));
+        
+        try {
+            dao.update(obj);
+        } catch (DatabaseException e) {
+            JOptionPane.showMessageDialog(this, "Não foi possível editar o registro!", "Erro", JOptionPane.ERROR_MESSAGE);
+        }
+        
+        JOptionPane.showMessageDialog(this, "O registro foi editado com sucesso!");
+        atualizarTabela();
+        limparCampos();
+        estadoOperacao = EstadoOperacao.OCIOSO;
+    }
+
+    private boolean validarCampos() {
+        return !txtNome.getText().isEmpty();
+    }
+
 }

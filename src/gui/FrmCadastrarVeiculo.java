@@ -8,6 +8,7 @@ import entities.Veiculo;
 import entities.dao.IVeiculoDao;
 import entities.dao.implementation.exceptions.DatabaseException;
 import gui.enums.EstadoOperacao;
+import gui.utils.Utils;
 import java.util.List;
 import javax.swing.JOptionPane;
 import javax.swing.table.DefaultTableModel;
@@ -406,7 +407,7 @@ public class FrmCadastrarVeiculo extends javax.swing.JFrame {
 
     private void btnPesquisarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnPesquisarActionPerformed
         DefaultTableModel model = (DefaultTableModel) tblVeiculos.getModel();
-        limparTabela(model);
+        Utils.limparTabela(model);
         
         Veiculo obj = dao.findById(txtPesquisar.getText());
         
@@ -425,6 +426,7 @@ public class FrmCadastrarVeiculo extends javax.swing.JFrame {
 
     private void btnCancelarPesquisaActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnCancelarPesquisaActionPerformed
         atualizarTabela();
+        txtPesquisar.setText("");
     }//GEN-LAST:event_btnCancelarPesquisaActionPerformed
 
 
@@ -457,7 +459,7 @@ public class FrmCadastrarVeiculo extends javax.swing.JFrame {
 
     private void atualizarTabela() {
         DefaultTableModel model = (DefaultTableModel) tblVeiculos.getModel();
-        limparTabela(model);
+        Utils.limparTabela(model);
         
         List<Veiculo> veiculos = dao.findAll();
         
@@ -470,11 +472,6 @@ public class FrmCadastrarVeiculo extends javax.swing.JFrame {
                 String.valueOf(veiculo.getCapacidade())
             });
         }
-    }
-
-    private void limparTabela(DefaultTableModel model) {
-        while(model.getRowCount() > 0)
-            model.removeRow(0);
     }
 
     private boolean validarCampos() {

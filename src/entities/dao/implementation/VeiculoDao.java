@@ -43,7 +43,8 @@ public class VeiculoDao implements IVeiculoDao {
             
             int affectedRows = query.executeUpdate();
             
-            if(affectedRows == 0) throw new DatabaseException("Não foi possível salvar o registro no banco de dados.");
+            if(affectedRows == 0)
+                throw new DatabaseException("Não foi possível salvar o registro no banco de dados.");
             
         } catch (SQLException ex) {
             Logger.getLogger(VeiculoDao.class.getName()).log(Level.SEVERE, null, ex);
@@ -137,7 +138,8 @@ public class VeiculoDao implements IVeiculoDao {
             
             int affectedRows = query.executeUpdate();
             
-            if(affectedRows == 0) throw new DatabaseException("Não foi possível atualizar o registro no banco de dados.");
+            if(affectedRows == 0)
+                throw new DatabaseException("Não foi possível atualizar o registro no banco de dados.");
             
         } catch (SQLException ex) {
             Logger.getLogger(VeiculoDao.class.getName()).log(Level.SEVERE, null, ex);
@@ -161,7 +163,8 @@ public class VeiculoDao implements IVeiculoDao {
             
             int affectedRows = query.executeUpdate();
             
-            if(affectedRows == 0) throw new DatabaseException("Não foi possível remover o registro do banco de dados.");
+            if(affectedRows == 0)
+                throw new DatabaseException("Não foi possível remover o registro do banco de dados.");
             
         } catch (SQLException ex) {
             Logger.getLogger(VeiculoDao.class.getName()).log(Level.SEVERE, null, ex);
@@ -174,7 +177,8 @@ public class VeiculoDao implements IVeiculoDao {
         
         Veiculo obj = findById(placa);
         
-        if(obj.getPlaca() == null) throw new RegisterNotFoundException("Não foi possível encontrar o registro no banco de dados.");
+        if(obj.getPlaca() == null)
+            throw new RegisterNotFoundException("Não foi possível encontrar o registro no banco de dados.");
         
     }
     
