@@ -5,6 +5,7 @@
  */
 package gui;
 
+import entities.dao.implementation.MotoristaDao;
 import entities.dao.implementation.VeiculoDao;
 import java.awt.Image;
 import java.awt.Toolkit;
@@ -143,7 +144,7 @@ public class FrmMenu extends javax.swing.JFrame {
     }//GEN-LAST:event_btnCadastroVeiculoActionPerformed
 
     private void btnCadastroMotoristaActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnCadastroMotoristaActionPerformed
-        new FrmCadastrarMotorista().setVisible(true);
+        new FrmCadastrarMotorista(new MotoristaDao()).setVisible(true);
         this.dispose();
     }//GEN-LAST:event_btnCadastroMotoristaActionPerformed
 
