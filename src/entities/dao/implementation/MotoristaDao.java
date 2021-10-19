@@ -6,8 +6,8 @@
 package entities.dao.implementation;
 
 import db.Database;
-import entities.Veiculo;
-import entities.dao.IVeiculoDao;
+import entities.Motorista;
+import entities.dao.IMotoristaDao;
 import entities.dao.implementation.exceptions.DatabaseException;
 import entities.dao.implementation.exceptions.RegisterNotFoundException;
 import java.util.List;
@@ -23,23 +23,20 @@ import java.util.logging.Logger;
  *
  * @author ADM
  */
-public class VeiculoDao implements IVeiculoDao {
+public class MotoristaDao implements IMotoristaDao {
 
     @Override
-    public void insert(Veiculo veiculo) {
+    public void insert(Motorista motorista) {
         Connection conexao = null;
         try {
             conexao = Database.getConnection();
             
             PreparedStatement query = conexao.prepareStatement("""
-                                                               INSERT INTO Veiculos(placa, marca, modelo, ano, capacidade)
-                                                               VALUES (?, ?, ?, ?, ?);
+                                                               INSERT INTO Motoristas(nome, cat_cnh)
+                                                               VALUES (?, ?);
                                                                """);
-            query.setString(1, veiculo.getPlaca());
-            query.setString(2, veiculo.getMarca());
-            query.setString(3, veiculo.getModelo());
-            query.setInt(4, veiculo.getAno());
-            query.setDouble(5, veiculo.getCapacidade());
+            query.setString(1, motorista.getNome());
+            query.setString(2, String.valueOf(motorista.getCategoriaCnh()));
             
             int affectedRows = query.executeUpdate();
             
@@ -54,24 +51,24 @@ public class VeiculoDao implements IVeiculoDao {
     }
 
     @Override
-    public Veiculo findById(String placa) {
-        Veiculo obj = new Veiculo();
+    public Motorista findById(Integer id) {
+        Motorista obj = new Motorista();
         
         Connection conexao = null;
+        
         try {
             conexao = Database.getConnection();
             
-            PreparedStatement query = conexao.prepareStatement("SELECT * FROM Veiculos WHERE placa = ?;");
-            query.setString(1, placa);
+            PreparedStatement query = conexao.prepareStatement("SELECT * FROM Motoristas WHERE id_motorista = ?;");
+            query.setInt(1, id);
             
             ResultSet retorno = query.executeQuery();
             
             if(retorno.next()){
-                obj.setPlaca(retorno.getString("placa"));
-                obj.setMarca(retorno.getString("marca"));
-                obj.setModelo(retorno.getString("modelo"));
-                obj.setAno(retorno.getInt("ano"));
-                obj.setCapacidade(retorno.getDouble("capacidade"));
+                obj = new Motorista();
+                obj.setId(retorno.getInt("id_motorista"));
+                obj.setNome(retorno.getString("nome"));
+                obj.setCategoriaCnh(retorno.getString("cat_cnh").charAt(0));
             }
             
         } catch (SQLException ex) {
@@ -81,30 +78,28 @@ public class VeiculoDao implements IVeiculoDao {
         }
         
         return obj;
-        
     }
 
     @Override
-    public List<Veiculo> findAll() {
-        List<Veiculo> lista = new ArrayList<>();
+    public List<Motorista> findAll() {
+        List<Motorista> lista = new ArrayList<>();
         
         Connection conexao = null;
+        
         try {
             conexao = Database.getConnection();
             
-            PreparedStatement query = conexao.prepareStatement("SELECT * FROM Veiculos;");
+            PreparedStatement query = conexao.prepareStatement("SELECT * FROM Motoristas;");
             
             ResultSet retorno = query.executeQuery();
             
-            Veiculo obj;
+            Motorista obj;
             
             while(retorno.next()){
-                obj = new Veiculo();
-                obj.setPlaca(retorno.getString("placa"));
-                obj.setMarca(retorno.getString("marca"));
-                obj.setModelo(retorno.getString("modelo"));
-                obj.setAno(retorno.getInt("ano"));
-                obj.setCapacidade(retorno.getDouble("capacidade"));
+                obj = new Motorista();
+                obj.setId(retorno.getInt("id_motorista"));
+                obj.setNome(retorno.getString("nome"));
+                obj.setCategoriaCnh(retorno.getString("cat_cnh").charAt(0));
                 lista.add(obj);
             }
             
@@ -118,23 +113,20 @@ public class VeiculoDao implements IVeiculoDao {
     }
 
     @Override
-    public void update(Veiculo veiculo) {
-        
-        validarExistencia(veiculo.getPlaca());
+    public void update(Motorista motorista) {
+        validarExistencia(motorista.getId());
         
         Connection conexao = null;
         try {
             conexao = Database.getConnection();
             
             PreparedStatement query = conexao.prepareStatement("""
-                                                               UPDATE Veiculos SET marca = ?, modelo = ?, 
-                                                               ano = ?, capacidade = ? WHERE placa = ?;
+                                                               UPDATE Motoristas SET nome = ?, cat_cnh = ? 
+                                                               WHERE id_motorista = ?;
                                                                """);
-            query.setString(1, veiculo.getMarca());
-            query.setString(2, veiculo.getModelo());
-            query.setInt(3, veiculo.getAno());
-            query.setDouble(4, veiculo.getCapacidade());
-            query.setString(5, veiculo.getPlaca());
+            query.setString(1, motorista.getNome());
+            query.setString(2, String.valueOf(motorista.getCategoriaCnh()));
+            query.setInt(3, motorista.getId());
             
             int affectedRows = query.executeUpdate();
             
@@ -146,20 +138,18 @@ public class VeiculoDao implements IVeiculoDao {
         } finally {
             Database.closeConnection(conexao);
         }
-        
     }
 
     @Override
-    public void delete(String placa) {
-        
-        validarExistencia(placa);
+    public void delete(Integer id) {
+        validarExistencia(id);
         
         Connection conexao = null;
         try {
             conexao = Database.getConnection();
             
-            PreparedStatement query = conexao.prepareStatement("DELETE FROM Veiculos WHERE placa = ?;");
-            query.setString(1, placa);
+            PreparedStatement query = conexao.prepareStatement("DELETE FROM Motoristas WHERE id_motorista = ?;");
+            query.setInt(1, id);
             
             int affectedRows = query.executeUpdate();
             
@@ -172,14 +162,12 @@ public class VeiculoDao implements IVeiculoDao {
             Database.closeConnection(conexao);
         }
     }
-    
-    private void validarExistencia(String placa) {
+
+    private void validarExistencia(Integer id) {
+        Motorista obj = findById(id);
         
-        Veiculo obj = findById(placa);
-        
-        if(obj.getPlaca() == null)
+        if(obj.getId() == null)
             throw new RegisterNotFoundException("Não foi possível encontrar o registro no banco de dados.");
-        
     }
     
 }
