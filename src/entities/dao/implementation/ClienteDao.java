@@ -6,8 +6,8 @@
 package entities.dao.implementation;
 
 import db.Database;
-import entities.Produto;
-import entities.dao.IProdutoDao;
+import entities.Cliente;
+import entities.dao.IClienteDao;
 import entities.dao.implementation.exceptions.DatabaseException;
 import entities.dao.implementation.exceptions.RegisterNotFoundException;
 import java.util.List;
@@ -23,20 +23,19 @@ import java.util.logging.Logger;
  *
  * @author ADM
  */
-public class ProdutoDao implements IProdutoDao {
+public class ClienteDao implements IClienteDao {
 
     @Override
-    public void insert(Produto produto ){
+    public void insert(Cliente cliente ){
         Connection conexao = null;
         try {
             conexao = Database.getConnection();
             
             PreparedStatement query = conexao.prepareStatement("""
-                                                               INSERT INTO Produtos(descricao, valor)
-                                                               VALUES (?, ?);
+                                                               INSERT INTO Clientes(nome)
+                                                               VALUES (?);
                                                                """);
-            query.setString(1, produto.getDescricao());
-            query.setDouble(2, produto.getValor());
+            query.setString(1, cliente.getNome());
             
             int affectedRows = query.executeUpdate();
             
@@ -51,24 +50,23 @@ public class ProdutoDao implements IProdutoDao {
     }
 
     @Override
-    public Produto findById(Integer id) {
-        Produto obj = new Produto();
+    public Cliente findById(Integer id) {
+        Cliente obj = new Cliente();
         
         Connection conexao = null;
         
         try {
             conexao = Database.getConnection();
             
-            PreparedStatement query = conexao.prepareStatement("SELECT * FROM Produtos WHERE id_Produto = ?;");
+            PreparedStatement query = conexao.prepareStatement("SELECT * FROM Clientes WHERE id_Cliente = ?;");
             query.setInt(1, id);
             
             ResultSet retorno = query.executeQuery();
             
             if(retorno.next()){
-                obj = new Produto();
-                obj.setId(retorno.getInt("id_Produto"));
-                obj.setDescricao(retorno.getString("descricao"));
-                obj.setValor(retorno.getDouble("valor"));
+                obj = new Cliente();
+                obj.setId(retorno.getInt("id_Cliente"));
+                obj.setNome(retorno.getString("nome"));
             }
             
         } catch (SQLException ex) {
@@ -81,25 +79,24 @@ public class ProdutoDao implements IProdutoDao {
     }
 
     @Override
-    public List<Produto> findAll() {
-        List<Produto> lista = new ArrayList<>();
+    public List<Cliente> findAll() {
+        List<Cliente> lista = new ArrayList<>();
         
         Connection conexao = null;
         
         try {
             conexao = Database.getConnection();
             
-            PreparedStatement query = conexao.prepareStatement("SELECT * FROM Produtos;");
+            PreparedStatement query = conexao.prepareStatement("SELECT * FROM Clientes;");
             
             ResultSet retorno = query.executeQuery();
             
-            Produto obj;
+            Cliente obj;
             
             while(retorno.next()){
-                obj = new Produto();
-                obj.setId(retorno.getInt("id_Produto"));
-                obj.setDescricao(retorno.getString("descricao"));
-                obj.setValor(retorno.getDouble("valor"));
+                obj = new Cliente();
+                obj.setId(retorno.getInt("id_Cliente"));
+                obj.setNome(retorno.getString("nome"));
                 lista.add(obj);
             }
             
@@ -113,20 +110,19 @@ public class ProdutoDao implements IProdutoDao {
     }
 
     @Override
-    public void update(Produto produto) {
-        validarExistencia(produto.getId());
+    public void update(Cliente cliente) {
+        validarExistencia(cliente.getId());
         
         Connection conexao = null;
         try {
             conexao = Database.getConnection();
             
             PreparedStatement query = conexao.prepareStatement("""
-                                                               UPDATE Produtos SET descricao = ?, valor = ? 
-                                                               WHERE id_Produto = ?;
+                                                               UPDATE Clientes SET nome = ? 
+                                                               WHERE id_Cliente = ?;
                                                                """);
-            query.setString(1, produto.getDescricao());
-            query.setDouble(2, produto.getValor());
-            query.setInt(3, produto.getId());
+            query.setString(1, cliente.getNome());
+            query.setDouble(2, cliente.getId());
             
             int affectedRows = query.executeUpdate();
             
@@ -148,7 +144,7 @@ public class ProdutoDao implements IProdutoDao {
         try {
             conexao = Database.getConnection();
             
-            PreparedStatement query = conexao.prepareStatement("DELETE FROM Produtos WHERE id_Produto = ?;");
+            PreparedStatement query = conexao.prepareStatement("DELETE FROM Clientes WHERE id_Cliente = ?;");
             query.setInt(1, id);
             
             int affectedRows = query.executeUpdate();
@@ -164,7 +160,7 @@ public class ProdutoDao implements IProdutoDao {
     }
 
     private void validarExistencia(Integer id) {
-        Produto obj = findById(id);
+        Cliente obj = findById(id);
         
         if(obj.getId() == null)
             throw new RegisterNotFoundException("Não foi possível encontrar o registro no banco de dados.");
