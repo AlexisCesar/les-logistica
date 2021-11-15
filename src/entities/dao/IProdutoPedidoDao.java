@@ -15,9 +15,9 @@ import java.util.List;
 public interface IProdutoPedidoDao {
     
     void insert(ProdutoPedido produtopedido);
-    ProdutoPedido findById(Integer id);
+    ProdutoPedido findById(Integer idNotaFiscal, Integer idProduto);
     List<ProdutoPedido> findAll();
     void update(ProdutoPedido produtopedido);
-    void delete(Integer id);
+    void delete(Integer idNotaFiscal, Integer idProduto);
     
 }
