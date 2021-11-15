@@ -1,3 +1,5 @@
 /*C3*/SET SCHEMA PUBLIC
-ALTER TABLE NOTASFISCAIS ALTER COLUMN ID_PRODUTO RENAME TO ID_NOTAFISCAL
+CREATE TABLE ProdutoNotaFiscal (\u000a\u0009id_notafiscal int,\u000a\u0009id_produto int,\u000a\u0009quantidade int\u000a)
+ALTER TABLE ProdutoNotaFiscal ADD FOREIGN KEY (id_notafiscal) REFERENCES NotasFiscais(id_notafiscal)
+ALTER TABLE ProdutoNotaFiscal ADD FOREIGN KEY (id_produto) REFERENCES Produtos(id_produto)
 DISCONNECT
