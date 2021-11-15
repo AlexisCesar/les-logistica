@@ -45,25 +45,27 @@ public class FrmCadastrarRomaneio extends javax.swing.JFrame {
 
         txtId = new javax.swing.JTextField();
         cbxBusca = new javax.swing.JComboBox<>();
-        txtNome = new javax.swing.JTextField();
-        cbxTipoCarteira = new javax.swing.JComboBox<>();
         btnGravar = new javax.swing.JButton();
         btnCancelar = new javax.swing.JButton();
         btnVoltar = new javax.swing.JButton();
         jScrollPane2 = new javax.swing.JScrollPane();
-        tblMotoristas = new javax.swing.JTable();
+        tblNF = new javax.swing.JTable();
         lblId = new javax.swing.JLabel();
         lblPesquisar = new javax.swing.JLabel();
         txtPesquisar = new javax.swing.JTextField();
-        lblNome = new javax.swing.JLabel();
         btnPesquisar = new javax.swing.JButton();
-        lblTipoCarteira = new javax.swing.JLabel();
         lblProcurarPor = new javax.swing.JLabel();
         btnCancelarPesquisa = new javax.swing.JButton();
         jScrollPane1 = new javax.swing.JScrollPane();
-        jList1 = new javax.swing.JList<>();
-        jButton1 = new javax.swing.JButton();
-        jButton2 = new javax.swing.JButton();
+        lstNF = new javax.swing.JList<>();
+        btnAdicionar = new javax.swing.JButton();
+        btnRemover = new javax.swing.JButton();
+        lblVeiculo = new javax.swing.JLabel();
+        lblMotorista = new javax.swing.JLabel();
+        cbxVeiculo = new javax.swing.JComboBox<>();
+        txtId1 = new javax.swing.JTextField();
+        cbxMotorista = new javax.swing.JComboBox<>();
+        btnDetalhes = new javax.swing.JButton();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
 
@@ -72,14 +74,7 @@ public class FrmCadastrarRomaneio extends javax.swing.JFrame {
         cbxBusca.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "ID", "Nome" }));
         cbxBusca.setEnabled(false);
 
-        cbxTipoCarteira.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "A", "B", "C", "D", "E" }));
-
         btnGravar.setText("Gravar");
-        btnGravar.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                btnGravarActionPerformed(evt);
-            }
-        });
 
         btnCancelar.setText("Cancelar");
         btnCancelar.addActionListener(new java.awt.event.ActionListener() {
@@ -95,72 +90,70 @@ public class FrmCadastrarRomaneio extends javax.swing.JFrame {
             }
         });
 
-        tblMotoristas.setModel(new javax.swing.table.DefaultTableModel(
+        tblNF.setModel(new javax.swing.table.DefaultTableModel(
             new Object [][] {
-                {null, null, null},
-                {null, null, null},
-                {null, null, null},
-                {null, null, null},
-                {null, null, null},
-                {null, null, null},
-                {null, null, null},
-                {null, null, null},
-                {null, null, null},
-                {null, null, null},
-                {null, null, null},
-                {null, null, null},
-                {null, null, null},
-                {null, null, null},
-                {null, null, null},
-                {null, null, null},
-                {null, null, null},
-                {null, null, null},
-                {null, null, null},
-                {null, null, null},
-                {null, null, null},
-                {null, null, null},
-                {null, null, null},
-                {null, null, null},
-                {null, null, null},
-                {null, null, null},
-                {null, null, null},
-                {null, null, null},
-                {null, null, null},
-                {null, null, null},
-                {null, null, null},
-                {null, null, null},
-                {null, null, null},
-                {null, null, null},
-                {null, null, null},
-                {null, null, null},
-                {null, null, null},
-                {null, null, null},
-                {null, null, null},
-                {null, null, null},
-                {null, null, null},
-                {null, null, null},
-                {null, null, null},
-                {null, null, null}
+                {null, null, null, null},
+                {null, null, null, null},
+                {null, null, null, null},
+                {null, null, null, null},
+                {null, null, null, null},
+                {null, null, null, null},
+                {null, null, null, null},
+                {null, null, null, null},
+                {null, null, null, null},
+                {null, null, null, null},
+                {null, null, null, null},
+                {null, null, null, null},
+                {null, null, null, null},
+                {null, null, null, null},
+                {null, null, null, null},
+                {null, null, null, null},
+                {null, null, null, null},
+                {null, null, null, null},
+                {null, null, null, null},
+                {null, null, null, null},
+                {null, null, null, null},
+                {null, null, null, null},
+                {null, null, null, null},
+                {null, null, null, null},
+                {null, null, null, null},
+                {null, null, null, null},
+                {null, null, null, null},
+                {null, null, null, null},
+                {null, null, null, null},
+                {null, null, null, null},
+                {null, null, null, null},
+                {null, null, null, null},
+                {null, null, null, null},
+                {null, null, null, null},
+                {null, null, null, null},
+                {null, null, null, null},
+                {null, null, null, null},
+                {null, null, null, null},
+                {null, null, null, null},
+                {null, null, null, null},
+                {null, null, null, null},
+                {null, null, null, null},
+                {null, null, null, null},
+                {null, null, null, null}
             },
             new String [] {
-                "ID", "Nome", "CNH"
+                "ID", "Nome do Cliente", "Data de Emissão", "Valor Total"
             }
         ) {
             boolean[] canEdit = new boolean [] {
-                false, false, false
+                false, false, false, false
             };
 
             public boolean isCellEditable(int rowIndex, int columnIndex) {
                 return canEdit [columnIndex];
             }
         });
-        jScrollPane2.setViewportView(tblMotoristas);
+        jScrollPane2.setViewportView(tblNF);
 
         lblId.setText("ID:");
 
         lblPesquisar.setText("Pesquisar");
-
-        lblNome.setText("Nome:");
 
         btnPesquisar.setText("Pesquisar");
         btnPesquisar.addActionListener(new java.awt.event.ActionListener() {
@@ -168,8 +161,6 @@ public class FrmCadastrarRomaneio extends javax.swing.JFrame {
                 btnPesquisarActionPerformed(evt);
             }
         });
-
-        lblTipoCarteira.setText("Tipo de Carteira:");
 
         lblProcurarPor.setText("Procurar por:");
         lblProcurarPor.setToolTipText("");
@@ -181,44 +172,73 @@ public class FrmCadastrarRomaneio extends javax.swing.JFrame {
             }
         });
 
-        jList1.setModel(new javax.swing.AbstractListModel<String>() {
-            String[] strings = { "Item 1", "Item 2", "Item 3", "Item 4", "Item 5" };
+        lstNF.setModel(new javax.swing.AbstractListModel<String>() {
+            String[] strings = { "NF - 120", "NF - 69", "NF - 420", "NF - 666", "NF - 42" };
             public int getSize() { return strings.length; }
             public String getElementAt(int i) { return strings[i]; }
         });
-        jScrollPane1.setViewportView(jList1);
+        jScrollPane1.setViewportView(lstNF);
 
-        jButton1.setText("jButton1");
+        btnAdicionar.setText("Adicionar");
 
-        jButton2.setText("jButton2");
+        btnRemover.setText("Remover");
+
+        lblVeiculo.setText("Veiculo");
+
+        lblMotorista.setText("Motorista");
+
+        cbxVeiculo.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "Corsa", "Ferrari", "Uno", "Relampago Marquinhos", " " }));
+        cbxVeiculo.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                cbxVeiculoActionPerformed(evt);
+            }
+        });
+
+        txtId1.setEditable(false);
+
+        cbxMotorista.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "Estevão Rei Delas", "Matilda Barraqueira", "MC Carol", "MC Poze Passa o Rodo" }));
+        cbxMotorista.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                cbxMotoristaActionPerformed(evt);
+            }
+        });
+
+        btnDetalhes.setText("Exibir Detalhes");
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
         layout.setHorizontalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(layout.createSequentialGroup()
-                .addContainerGap()
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addGroup(layout.createSequentialGroup()
-                        .addComponent(lblNome)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                        .addComponent(txtNome))
-                    .addGroup(layout.createSequentialGroup()
-                        .addComponent(btnCancelar, javax.swing.GroupLayout.PREFERRED_SIZE, 75, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                        .addComponent(btnGravar))
+                        .addContainerGap()
+                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                            .addGroup(layout.createSequentialGroup()
+                                .addComponent(btnCancelar, javax.swing.GroupLayout.PREFERRED_SIZE, 75, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                                .addComponent(btnGravar)
+                                .addGap(12, 12, 12))
+                            .addGroup(layout.createSequentialGroup()
+                                .addComponent(lblId)
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                                .addComponent(txtId, javax.swing.GroupLayout.PREFERRED_SIZE, 150, javax.swing.GroupLayout.PREFERRED_SIZE))
+                            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
+                                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                                    .addComponent(lblVeiculo)
+                                    .addComponent(lblMotorista))
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 9, Short.MAX_VALUE)
+                                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
+                                    .addComponent(cbxMotorista, 0, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                                    .addComponent(cbxVeiculo, 0, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)))))
                     .addGroup(layout.createSequentialGroup()
                         .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                             .addGroup(layout.createSequentialGroup()
-                                .addComponent(lblId)
-                                .addGap(26, 26, 26)
-                                .addComponent(txtId, javax.swing.GroupLayout.PREFERRED_SIZE, 150, javax.swing.GroupLayout.PREFERRED_SIZE))
+                                .addGap(59, 59, 59)
+                                .addComponent(btnRemover))
                             .addGroup(layout.createSequentialGroup()
-                                .addComponent(lblTipoCarteira)
-                                .addGap(18, 18, 18)
-                                .addComponent(cbxTipoCarteira, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-                            .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 160, javax.swing.GroupLayout.PREFERRED_SIZE)
-                            .addComponent(jButton2))
+                                .addGap(20, 20, 20)
+                                .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 160, javax.swing.GroupLayout.PREFERRED_SIZE)))
                         .addGap(0, 0, Short.MAX_VALUE)))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
@@ -237,7 +257,9 @@ public class FrmCadastrarRomaneio extends javax.swing.JFrame {
                                 .addComponent(cbxBusca, javax.swing.GroupLayout.PREFERRED_SIZE, 73, javax.swing.GroupLayout.PREFERRED_SIZE))
                             .addGroup(layout.createSequentialGroup()
                                 .addGap(4, 4, 4)
-                                .addComponent(jButton1)))
+                                .addComponent(btnAdicionar)
+                                .addGap(18, 18, 18)
+                                .addComponent(btnDetalhes)))
                         .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                             .addGroup(layout.createSequentialGroup()
                                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
@@ -246,6 +268,11 @@ public class FrmCadastrarRomaneio extends javax.swing.JFrame {
                                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                                 .addComponent(btnCancelarPesquisa)))))
                 .addContainerGap())
+            .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                .addGroup(layout.createSequentialGroup()
+                    .addGap(0, 0, Short.MAX_VALUE)
+                    .addComponent(txtId1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addGap(0, 0, Short.MAX_VALUE)))
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -255,7 +282,8 @@ public class FrmCadastrarRomaneio extends javax.swing.JFrame {
                         .addContainerGap()
                         .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                             .addComponent(btnVoltar)
-                            .addComponent(jButton1))
+                            .addComponent(btnAdicionar)
+                            .addComponent(btnDetalhes))
                         .addGap(10, 10, 10)
                         .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                             .addComponent(lblPesquisar)
@@ -271,39 +299,36 @@ public class FrmCadastrarRomaneio extends javax.swing.JFrame {
                         .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                             .addComponent(lblId)
                             .addComponent(txtId, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                            .addComponent(lblNome)
-                            .addComponent(txtNome, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                            .addComponent(lblTipoCarteira)
-                            .addComponent(cbxTipoCarteira, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                        .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                            .addComponent(lblVeiculo)
+                            .addComponent(cbxVeiculo, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(jButton2)
-                        .addGap(127, 127, 127)
+                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                            .addComponent(lblMotorista)
+                            .addComponent(cbxMotorista, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                        .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 190, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addGap(18, 18, 18)
+                        .addComponent(btnRemover)
+                        .addGap(53, 53, 53)
                         .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                             .addComponent(btnCancelar)
                             .addComponent(btnGravar))))
                 .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+            .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                .addGroup(layout.createSequentialGroup()
+                    .addGap(0, 0, Short.MAX_VALUE)
+                    .addComponent(txtId1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addGap(0, 0, Short.MAX_VALUE)))
         );
 
         pack();
     }// </editor-fold>//GEN-END:initComponents
 
-    private void btnGravarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnGravarActionPerformed
-        if(estadoOperacao == EstadoOperacao.INSERINDO)
-            inserirRegistro();
-        else if (estadoOperacao == EstadoOperacao.EDITANDO)
-            editarRegistro();
-        else
-            JOptionPane.showMessageDialog(this, "Você não está inserindo ou editando nenhum registro.");
-    }//GEN-LAST:event_btnGravarActionPerformed
-
+    /**/
     private void btnVoltarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnVoltarActionPerformed
-        new FrmMenu().setVisible(true);
+        new FrmListarRomaneio().setVisible(true);
         this.dispose();
     }//GEN-LAST:event_btnVoltarActionPerformed
 
@@ -314,7 +339,7 @@ public class FrmCadastrarRomaneio extends javax.swing.JFrame {
     }//GEN-LAST:event_btnCancelarActionPerformed
 
     private void btnPesquisarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnPesquisarActionPerformed
-        DefaultTableModel model = (DefaultTableModel) tblMotoristas.getModel();
+        DefaultTableModel model = (DefaultTableModel) tblNF.getModel();
         Utils.limparTabela(model);
         
         int id;
@@ -342,39 +367,47 @@ public class FrmCadastrarRomaneio extends javax.swing.JFrame {
         txtPesquisar.setText("");
     }//GEN-LAST:event_btnCancelarPesquisaActionPerformed
 
+    private void cbxVeiculoActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_cbxVeiculoActionPerformed
+        // TODO add your handling code here:
+    }//GEN-LAST:event_cbxVeiculoActionPerformed
+
+    private void cbxMotoristaActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_cbxMotoristaActionPerformed
+        // TODO add your handling code here:
+    }//GEN-LAST:event_cbxMotoristaActionPerformed
+
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
+    private javax.swing.JButton btnAdicionar;
     private javax.swing.JButton btnCancelar;
     private javax.swing.JButton btnCancelarPesquisa;
+    private javax.swing.JButton btnDetalhes;
     private javax.swing.JButton btnGravar;
     private javax.swing.JButton btnPesquisar;
+    private javax.swing.JButton btnRemover;
     private javax.swing.JButton btnVoltar;
     private javax.swing.JComboBox<String> cbxBusca;
-    private javax.swing.JComboBox<String> cbxTipoCarteira;
-    private javax.swing.JButton jButton1;
-    private javax.swing.JButton jButton2;
-    private javax.swing.JList<String> jList1;
+    private javax.swing.JComboBox<String> cbxMotorista;
+    private javax.swing.JComboBox<String> cbxVeiculo;
     private javax.swing.JScrollPane jScrollPane1;
     private javax.swing.JScrollPane jScrollPane2;
     private javax.swing.JLabel lblId;
-    private javax.swing.JLabel lblNome;
+    private javax.swing.JLabel lblMotorista;
     private javax.swing.JLabel lblPesquisar;
     private javax.swing.JLabel lblProcurarPor;
-    private javax.swing.JLabel lblTipoCarteira;
-    private javax.swing.JTable tblMotoristas;
+    private javax.swing.JLabel lblVeiculo;
+    private javax.swing.JList<String> lstNF;
+    private javax.swing.JTable tblNF;
     private javax.swing.JTextField txtId;
-    private javax.swing.JTextField txtNome;
+    private javax.swing.JTextField txtId1;
     private javax.swing.JTextField txtPesquisar;
     // End of variables declaration//GEN-END:variables
 
     private void habilitarCampos(boolean b) {
         txtId.setEnabled(b);
-        txtNome.setEnabled(b);
-        cbxTipoCarteira.setEnabled(b);
     }
 
     private void atualizarTabela() {
-        DefaultTableModel model = (DefaultTableModel) tblMotoristas.getModel();
+        DefaultTableModel model = (DefaultTableModel) tblNF.getModel();
         Utils.limparTabela(model);
         
         List<Motorista> motoristas = dao.findAll();
@@ -390,10 +423,10 @@ public class FrmCadastrarRomaneio extends javax.swing.JFrame {
 
     private void limparCampos() {
         txtId.setText("");
-        txtNome.setText("");
-        cbxTipoCarteira.setSelectedIndex(0);
+        cbxVeiculo.setSelectedIndex(0);
+        cbxMotorista.setSelectedIndex(0);
     }
-
+/*
     private void preencherCampos(Integer id) {
         Motorista obj = dao.findById(id);
         txtId.setText(String.valueOf(obj.getId()));
@@ -451,5 +484,5 @@ public class FrmCadastrarRomaneio extends javax.swing.JFrame {
     private boolean validarCampos() {
         return !txtNome.getText().isEmpty();
     }
-
+*/
 }
