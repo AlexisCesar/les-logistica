@@ -5,7 +5,10 @@
 package gui;
 
 import entities.Motorista;
+import entities.NotaFiscal;
 import entities.dao.IMotoristaDao;
+import entities.dao.INotaFiscalDao;
+import entities.dao.implementation.NotaFiscalDao;
 import entities.dao.implementation.exceptions.DatabaseException;
 import gui.enums.EstadoOperacao;
 import gui.utils.Utils;
@@ -19,21 +22,21 @@ import javax.swing.table.DefaultTableModel;
  */
 public class FrmCadastrarRomaneio extends javax.swing.JFrame {
 
-    private IMotoristaDao dao;
+    private INotaFiscalDao dao;
     private EstadoOperacao estadoOperacao;
     
     /**
      * Creates new form FrmCadastrarMotorista
      */
-    public FrmCadastrarRomaneio() {
+    public FrmCadastrarRomaneio(NotaFiscalDao daoNF) {
 	initComponents();
         this.setLocationRelativeTo(null);
         
-        this.dao = null;
+        this.dao = daoNF;
         this.estadoOperacao = EstadoOperacao.OCIOSO;
         
         habilitarCampos(false);
-        //atualizarTabela();
+        atualizarTabela();
     }
 
     /**
@@ -350,15 +353,16 @@ public class FrmCadastrarRomaneio extends javax.swing.JFrame {
             return;
         }
         
-        Motorista obj = dao.findById(id);
+        NotaFiscal obj = dao.findById(id);
         
         if(obj.getId() == null)
             return;
         
         model.addRow(new String[] {
             String.valueOf(obj.getId()),
-            obj.getNome(),
-            String.valueOf(obj.getCategoriaCnh())
+                "Cliente Fake",
+                "01/01/2020",
+                String.valueOf(99.90)
         });
     }//GEN-LAST:event_btnPesquisarActionPerformed
 
@@ -410,13 +414,14 @@ public class FrmCadastrarRomaneio extends javax.swing.JFrame {
         DefaultTableModel model = (DefaultTableModel) tblNF.getModel();
         Utils.limparTabela(model);
         
-        List<Motorista> motoristas = dao.findAll();
+        List<NotaFiscal> nfs = dao.findAll();
         
-        for(Motorista motorista : motoristas) {
+        for(NotaFiscal nf : nfs) {
             model.addRow(new String[] {
-                String.valueOf(motorista.getId()),
-                motorista.getNome(),
-                String.valueOf(motorista.getCategoriaCnh())
+                String.valueOf(nf.getId()),
+                "Cliente Fake",
+                "01/01/2020",
+                String.valueOf(99.90)
             });
         }
     }

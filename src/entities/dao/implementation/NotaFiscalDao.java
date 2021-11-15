@@ -15,6 +15,8 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.time.Instant;
 import java.util.ArrayList;
 import java.util.logging.Level;
@@ -102,7 +104,7 @@ public class NotaFiscalDao implements INotaFiscalDao {
             while(retorno.next()){
                 obj = new NotaFiscal();
                 obj.setId(retorno.getInt("id_NotaFiscal"));
-                obj.setDataEmissao(Instant.parse(retorno.getString("dataemissao")));
+                obj.setDataEmissao(new SimpleDateFormat("dd/MM/yyyy").parse(retorno.getString("dataemissao")).toInstant());
                 //obj.setRomaneio...
                 obj.setCliente(new ClienteDao().findById(retorno.getInt(("id_cliente"))));
                 //obj.setEntrega...
@@ -111,6 +113,8 @@ public class NotaFiscalDao implements INotaFiscalDao {
             
         } catch (SQLException ex) {
             Logger.getLogger(VeiculoDao.class.getName()).log(Level.SEVERE, null, ex);
+        } catch (ParseException ex) {
+            Logger.getLogger(NotaFiscalDao.class.getName()).log(Level.SEVERE, null, ex);
         } finally {
             Database.closeConnection(conexao);
         }

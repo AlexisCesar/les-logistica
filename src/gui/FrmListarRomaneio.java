@@ -6,6 +6,7 @@ package gui;
 
 import entities.Motorista;
 import entities.dao.IMotoristaDao;
+import entities.dao.implementation.NotaFiscalDao;
 import gui.enums.EstadoOperacao;
 import gui.utils.Utils;
 import java.util.List;
@@ -258,7 +259,8 @@ public class FrmListarRomaneio extends javax.swing.JFrame {
     }//GEN-LAST:event_btnPesquisarActionPerformed
 
     private void btnIncluirActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnIncluirActionPerformed
-        new FrmCadastrarRomaneio().setVisible(true);
+        new FrmCadastrarRomaneio(new NotaFiscalDao()).setVisible(true);
+        this.dispose();
     }//GEN-LAST:event_btnIncluirActionPerformed
 
     private void btnAlterarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnAlterarActionPerformed
