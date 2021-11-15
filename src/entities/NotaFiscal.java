@@ -21,17 +21,15 @@ public class NotaFiscal {
     private Cliente cliente;
     private Instant dataEmissao;
     private Set<ProdutoPedido> produtos = new HashSet<>();
-    private Entrega entrega;
 
     public NotaFiscal() {
     }
 
-    public NotaFiscal(Integer id, Romaneio romaneio, Cliente cliente, Instant dataEmissao, Entrega entrega) {
+    public NotaFiscal(Integer id, Romaneio romaneio, Cliente cliente, Instant dataEmissao) {
         this.id = id;
         this.romaneio = romaneio;
         this.cliente = cliente;
         this.dataEmissao = dataEmissao;
-        this.entrega = entrega;
     }
 
     public Integer getId() {
@@ -64,14 +62,6 @@ public class NotaFiscal {
 
     public void setDataEmissao(Instant dataEmissao) {
         this.dataEmissao = dataEmissao;
-    }
-
-    public Entrega getEntrega() {
-        return entrega;
-    }
-
-    public void setEntrega(Entrega entrega) {
-        this.entrega = entrega;
     }
 
     public Set<ProdutoPedido> getProdutos() {
@@ -116,7 +106,7 @@ public class NotaFiscal {
 
     @Override
     public String toString() {
-        return "NotaFiscal{" + "id=" + id + ", romaneio=" + romaneio + ", cliente=" + cliente + ", dataEmissao=" + dataEmissao + ", enderecoDeEntrega=" + entrega.getEstadoEntrega().name() + '}';
+        return "NotaFiscal{" + "id=" + id + ", romaneio=" + romaneio + ", cliente=" + cliente + ", dataEmissao=" + dataEmissao + '}';
     }
     
 }
