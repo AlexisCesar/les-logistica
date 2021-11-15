@@ -149,7 +149,7 @@ public class FrmMenu extends javax.swing.JFrame {
     }//GEN-LAST:event_btnCadastroMotoristaActionPerformed
 
     private void btnCadastroRomaneioActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnCadastroRomaneioActionPerformed
-        new frmRomaneio().setVisible(true);
+        new FrmListarRomaneio().setVisible(true);
         this.dispose();
     }//GEN-LAST:event_btnCadastroRomaneioActionPerformed
 
