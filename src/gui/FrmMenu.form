@@ -33,7 +33,6 @@
                   <Component id="btnCadastroMotorista" alignment="0" max="32767" attributes="0"/>
                   <Component id="btnConsultarNotasFiscais" alignment="1" pref="399" max="32767" attributes="0"/>
                   <Component id="btnCadastroRomaneio" alignment="1" max="32767" attributes="0"/>
-                  <Component id="btnRastreamentoEntrega" alignment="0" max="32767" attributes="0"/>
                   <Component id="btnHistoricoEntrega" alignment="0" max="32767" attributes="0"/>
                   <Group type="102" alignment="1" attributes="0">
                       <EmptySpace min="0" pref="0" max="32767" attributes="0"/>
@@ -47,7 +46,7 @@
     <DimensionLayout dim="1">
       <Group type="103" groupAlignment="0" attributes="0">
           <Group type="102" alignment="0" attributes="0">
-              <EmptySpace max="-2" attributes="0"/>
+              <EmptySpace max="32767" attributes="0"/>
               <Component id="lblTitulo" min="-2" max="-2" attributes="0"/>
               <EmptySpace type="separate" max="-2" attributes="0"/>
               <Component id="btnCadastroVeiculo" min="-2" max="-2" attributes="0"/>
@@ -58,12 +57,10 @@
               <EmptySpace max="-2" attributes="0"/>
               <Component id="btnCadastroRomaneio" min="-2" max="-2" attributes="0"/>
               <EmptySpace max="-2" attributes="0"/>
-              <Component id="btnRastreamentoEntrega" min="-2" max="-2" attributes="0"/>
-              <EmptySpace max="-2" attributes="0"/>
               <Component id="btnHistoricoEntrega" min="-2" max="-2" attributes="0"/>
-              <EmptySpace max="32767" attributes="0"/>
+              <EmptySpace type="unrelated" max="-2" attributes="0"/>
               <Component id="btnSair" min="-2" max="-2" attributes="0"/>
-              <EmptySpace max="-2" attributes="0"/>
+              <EmptySpace min="-2" pref="7" max="-2" attributes="0"/>
           </Group>
       </Group>
     </DimensionLayout>
@@ -108,15 +105,13 @@
         <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="btnCadastroRomaneioActionPerformed"/>
       </Events>
     </Component>
-    <Component class="javax.swing.JButton" name="btnRastreamentoEntrega">
-      <Properties>
-        <Property name="text" type="java.lang.String" value="Rastreamento de Entrega"/>
-      </Properties>
-    </Component>
     <Component class="javax.swing.JButton" name="btnHistoricoEntrega">
       <Properties>
         <Property name="text" type="java.lang.String" value="Hist&#xf3;rico de Entrega"/>
       </Properties>
+      <Events>
+        <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="btnHistoricoEntregaActionPerformed"/>
+      </Events>
     </Component>
     <Component class="javax.swing.JButton" name="btnSair">
       <Properties>
