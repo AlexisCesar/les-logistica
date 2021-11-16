@@ -65,6 +65,7 @@ public class FrmCadastrarMotorista extends javax.swing.JFrame {
         btnCancelarPesquisa = new javax.swing.JButton();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
+        setResizable(false);
 
         txtId.setEditable(false);
 

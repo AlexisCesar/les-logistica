@@ -7,9 +7,11 @@ package gui;
 import entities.Motorista;
 import entities.dao.IMotoristaDao;
 import entities.dao.IProdutoNotaFiscalDao;
+import entities.dao.implementation.MotoristaDao;
 import entities.dao.implementation.NotaFiscalDao;
 import entities.dao.implementation.ProdutoDao;
 import entities.dao.implementation.ProdutoNotaFiscalDao;
+import entities.dao.implementation.VeiculoDao;
 import gui.enums.EstadoOperacao;
 import gui.utils.Utils;
 import java.util.List;
@@ -59,6 +61,7 @@ public class FrmListarRomaneio extends javax.swing.JFrame {
         btnCancelarPesquisa = new javax.swing.JButton();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
+        setResizable(false);
 
         cbxBusca.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "ID", "Nome" }));
         cbxBusca.setEnabled(false);
@@ -263,7 +266,9 @@ public class FrmListarRomaneio extends javax.swing.JFrame {
 
     private void btnIncluirActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnIncluirActionPerformed
         new FrmCadastrarRomaneio(new NotaFiscalDao(),
-                                    new ProdutoNotaFiscalDao(new ProdutoDao(), new NotaFiscalDao()))
+                                    new ProdutoNotaFiscalDao(new ProdutoDao(), new NotaFiscalDao()),
+                                    new VeiculoDao(),
+                                    new MotoristaDao())
                                     .setVisible(true);
         this.dispose();
     }//GEN-LAST:event_btnIncluirActionPerformed

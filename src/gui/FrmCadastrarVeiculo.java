@@ -71,6 +71,7 @@ public class FrmCadastrarVeiculo extends javax.swing.JFrame {
         btnCancelarPesquisa = new javax.swing.JButton();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
+        setResizable(false);
 
         tblVeiculos.setModel(new javax.swing.table.DefaultTableModel(
             new Object [][] {

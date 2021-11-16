@@ -4,16 +4,22 @@
  */
 package gui;
 
+import entities.Motorista;
 import entities.NotaFiscal;
 import entities.ProdutoNotaFiscal;
+import entities.Veiculo;
+import entities.dao.IMotoristaDao;
 import entities.dao.INotaFiscalDao;
 import entities.dao.IProdutoNotaFiscalDao;
+import entities.dao.IVeiculoDao;
 import gui.enums.EstadoOperacao;
 import gui.utils.Utils;
 import java.text.DecimalFormat;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+import javax.swing.DefaultListModel;
 import javax.swing.JOptionPane;
 import javax.swing.table.DefaultTableModel;
 
@@ -22,20 +28,26 @@ import javax.swing.table.DefaultTableModel;
  * @author Yo
  */
 public class FrmCadastrarRomaneio extends javax.swing.JFrame {
-
+    
     private INotaFiscalDao notaFiscalDao;
     private IProdutoNotaFiscalDao produtoNotaFiscalDao;
+    private IVeiculoDao veiculoDao;
+    private IMotoristaDao motoristaDao;
     private EstadoOperacao estadoOperacao;
     
     /**
      * Creates new form FrmCadastrarMotorista
      */
-    public FrmCadastrarRomaneio(INotaFiscalDao daoNF, IProdutoNotaFiscalDao daoItem) {
+    public FrmCadastrarRomaneio(INotaFiscalDao notaFiscalDao, IProdutoNotaFiscalDao produtoNotaFiscalDao,
+                                IVeiculoDao veiculoDao, IMotoristaDao motoristaDao) {
 	initComponents();
         this.setLocationRelativeTo(null);
         
-        this.notaFiscalDao = daoNF;
-        this.produtoNotaFiscalDao = daoItem;
+        this.notaFiscalDao = notaFiscalDao;
+        this.produtoNotaFiscalDao = produtoNotaFiscalDao;
+        this.veiculoDao = veiculoDao;
+        this.motoristaDao = motoristaDao;
+        
         this.estadoOperacao = EstadoOperacao.OCIOSO;
         
         habilitarCampos(false);
@@ -68,12 +80,12 @@ public class FrmCadastrarRomaneio extends javax.swing.JFrame {
         btnRemover = new javax.swing.JButton();
         lblVeiculo = new javax.swing.JLabel();
         lblMotorista = new javax.swing.JLabel();
-        cbxVeiculo = new javax.swing.JComboBox<>();
-        txtId1 = new javax.swing.JTextField();
-        cbxMotorista = new javax.swing.JComboBox<>();
         btnDetalhes = new javax.swing.JButton();
+        txtPlacaVeiculo = new javax.swing.JTextField();
+        txtIdMotorista = new javax.swing.JTextField();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
+        setResizable(false);
 
         txtId.setEditable(false);
 
@@ -81,6 +93,11 @@ public class FrmCadastrarRomaneio extends javax.swing.JFrame {
         cbxBusca.setEnabled(false);
 
         btnGravar.setText("Gravar");
+        btnGravar.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btnGravarActionPerformed(evt);
+            }
+        });
 
         btnCancelar.setText("Cancelar");
         btnCancelar.addActionListener(new java.awt.event.ActionListener() {
@@ -181,28 +198,29 @@ public class FrmCadastrarRomaneio extends javax.swing.JFrame {
         jScrollPane1.setViewportView(lstNF);
 
         btnAdicionar.setText("Adicionar");
+        btnAdicionar.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btnAdicionarActionPerformed(evt);
+            }
+        });
 
         btnRemover.setText("Remover");
+        btnRemover.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btnRemoverActionPerformed(evt);
+            }
+        });
 
         lblVeiculo.setText("Veiculo");
 
         lblMotorista.setText("Motorista");
 
-        cbxVeiculo.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                cbxVeiculoActionPerformed(evt);
-            }
-        });
-
-        txtId1.setEditable(false);
-
-        cbxMotorista.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                cbxMotoristaActionPerformed(evt);
-            }
-        });
-
         btnDetalhes.setText("Exibir Detalhes");
+        btnDetalhes.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btnDetalhesActionPerformed(evt);
+            }
+        });
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
@@ -224,14 +242,15 @@ public class FrmCadastrarRomaneio extends javax.swing.JFrame {
                                         .addComponent(lblId)
                                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                                         .addComponent(txtId, javax.swing.GroupLayout.PREFERRED_SIZE, 150, javax.swing.GroupLayout.PREFERRED_SIZE))
-                                    .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
+                                    .addGroup(layout.createSequentialGroup()
                                         .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                                            .addComponent(lblVeiculo)
-                                            .addComponent(lblMotorista))
+                                            .addComponent(lblMotorista)
+                                            .addComponent(lblVeiculo))
                                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                                            .addComponent(cbxMotorista, 0, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                                            .addComponent(cbxVeiculo, 0, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)))))
+                                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
+                                            .addComponent(txtPlacaVeiculo)
+                                            .addComponent(txtIdMotorista, javax.swing.GroupLayout.DEFAULT_SIZE, 105, Short.MAX_VALUE))
+                                        .addGap(0, 0, Short.MAX_VALUE))))
                             .addGroup(layout.createSequentialGroup()
                                 .addGap(59, 59, 59)
                                 .addComponent(btnRemover)
@@ -268,11 +287,6 @@ public class FrmCadastrarRomaneio extends javax.swing.JFrame {
                                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                                 .addComponent(btnCancelarPesquisa)))))
                 .addContainerGap())
-            .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                .addGroup(layout.createSequentialGroup()
-                    .addGap(0, 0, Short.MAX_VALUE)
-                    .addComponent(txtId1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addGap(0, 0, Short.MAX_VALUE)))
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -302,11 +316,11 @@ public class FrmCadastrarRomaneio extends javax.swing.JFrame {
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                         .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                             .addComponent(lblVeiculo)
-                            .addComponent(cbxVeiculo, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                            .addComponent(txtPlacaVeiculo, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                         .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                             .addComponent(lblMotorista)
-                            .addComponent(cbxMotorista, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                            .addComponent(txtIdMotorista, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                         .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 190, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addGap(18, 18, 18)
@@ -315,12 +329,7 @@ public class FrmCadastrarRomaneio extends javax.swing.JFrame {
                         .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                             .addComponent(btnCancelar)
                             .addComponent(btnGravar))))
-                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
-            .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                .addGroup(layout.createSequentialGroup()
-                    .addGap(0, 0, Short.MAX_VALUE)
-                    .addComponent(txtId1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addGap(0, 0, Short.MAX_VALUE)))
+                .addContainerGap(15, Short.MAX_VALUE))
         );
 
         pack();
@@ -380,13 +389,118 @@ public class FrmCadastrarRomaneio extends javax.swing.JFrame {
         txtPesquisar.setText("");
     }//GEN-LAST:event_btnCancelarPesquisaActionPerformed
 
-    private void cbxVeiculoActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_cbxVeiculoActionPerformed
-        // TODO add your handling code here:
-    }//GEN-LAST:event_cbxVeiculoActionPerformed
+    private void btnGravarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnGravarActionPerformed
+        if(!validarCampos()) {
+            JOptionPane.showMessageDialog(this, "Um ou mais campos inválidos\nVerifique se informou:"
+                    + "\nA placa correta do veículo"
+                    + "\nO ID correto do motorista"
+                    + "\nUma ou mais notas fiscais para o romaneio");
+            return;
+        }
+        
+        //Validar o veículo
+        Veiculo veiculo = veiculoDao.findById(txtPlacaVeiculo.getText().toUpperCase());
+        
+        if(veiculo.getPlaca() == null) {
+            JOptionPane.showMessageDialog(this, "Nenhum veículo encontrado com essa placa.");
+            return;
+        }
+        
+        //Validar o motorista
+        Motorista motorista = motoristaDao.findById(Integer.valueOf(txtIdMotorista.getText()));
+        
+        if(motorista.getId() == null) {
+           JOptionPane.showMessageDialog(this, "Nenhum motorista encontrado com esse ID.");
+           return; 
+        }
+        
+        //Validar as notas fiscais (pegar o peso total)
+        List<NotaFiscal> notasFiscais = new ArrayList<>();
+        int quantidadeEmbalagens = 0;
+        NotaFiscal nf;
+        
+        for(int i = 0; i < lstNF.getModel().getSize(); i++) {
+            int id = Integer.valueOf(lstNF.getModel().getElementAt(i));
+            nf = notaFiscalDao.findById(id);
+            
+            List<ProdutoNotaFiscal> itens = produtoNotaFiscalDao.findAll(nf.getId());
+            
+            for(ProdutoNotaFiscal item : itens) {
+                quantidadeEmbalagens += item.getQuantidade();
+                nf.adicionarItem(item);
+            }
+            
+            notasFiscais.add(nf);
+        }
+        
+        //Validar se o veículo suporta
+        if(veiculo.getCapacidade() < quantidadeEmbalagens) {
+            JOptionPane.showMessageDialog(this, """
+                                                Este ve\u00edculo n\u00e3o suporta essa quantidade de embalagens!
+                                                Diminua a quantidade de notas fiscais ou selecione um ve\u00edculo com maior capacidade.""");
+            return;
+        }
+        
+        //Inserir (precisa inserir nova entrega aqui? = Não, ela já deve estar mockada com as NFS)
+        //Precisa do RomaneioDao
+        
+        //Atualizar o campo romaneio das notas fiscais
+        
+        //Após inserir
+        JOptionPane.showMessageDialog(this, "Registro inserido com sucesso!");
+        new FrmListarRomaneio().setVisible(true);
+        this.dispose();
+    }//GEN-LAST:event_btnGravarActionPerformed
 
-    private void cbxMotoristaActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_cbxMotoristaActionPerformed
-        // TODO add your handling code here:
-    }//GEN-LAST:event_cbxMotoristaActionPerformed
+    private void btnAdicionarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnAdicionarActionPerformed
+        DefaultTableModel model = (DefaultTableModel) tblNF.getModel();
+        
+        if(tblNF.getSelectedRow() == -1){
+            JOptionPane.showMessageDialog(this, "Primeiro, selecione um registro na tabela.");
+            return;
+        }
+        
+        Integer id = Integer.parseInt(String.valueOf(model.getValueAt(tblNF.getSelectedRow(), 0)));
+        
+        for(int i = 0; i < lstNF.getModel().getSize(); i++) {
+            if(lstNF.getModel().getElementAt(i).equals(String.valueOf(id))) {
+                return;
+            }
+        }
+        
+        DefaultListModel<String> lstModel = new DefaultListModel<>();
+        
+        for(int i = 0; i < lstNF.getModel().getSize(); i++) {
+            lstModel.addElement(lstNF.getModel().getElementAt(i));
+        }
+        
+        lstModel.addElement(String.valueOf(id));
+        lstNF.setModel(lstModel);
+    }//GEN-LAST:event_btnAdicionarActionPerformed
+
+    private void btnRemoverActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnRemoverActionPerformed
+        
+        if(lstNF.getSelectedIndex() == -1){
+            JOptionPane.showMessageDialog(this, "Primeiro, selecione um registro na tabela.");
+            return;
+        }
+        
+        Integer id = Integer.parseInt(lstNF.getModel().getElementAt(lstNF.getSelectedIndex()));
+        
+        DefaultListModel<String> lstModel = new DefaultListModel<>();
+        
+        for(int i = 0; i < lstNF.getModel().getSize(); i++) {
+            if(!lstNF.getModel().getElementAt(i).equals(String.valueOf(id))) {
+                lstModel.addElement(lstNF.getModel().getElementAt(i));
+            }
+        }
+        lstNF.setModel(lstModel);
+        
+    }//GEN-LAST:event_btnRemoverActionPerformed
+
+    private void btnDetalhesActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnDetalhesActionPerformed
+        JOptionPane.showMessageDialog(this, "Ainda não implementado");
+    }//GEN-LAST:event_btnDetalhesActionPerformed
 
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
@@ -399,8 +513,6 @@ public class FrmCadastrarRomaneio extends javax.swing.JFrame {
     private javax.swing.JButton btnRemover;
     private javax.swing.JButton btnVoltar;
     private javax.swing.JComboBox<String> cbxBusca;
-    private javax.swing.JComboBox<String> cbxMotorista;
-    private javax.swing.JComboBox<String> cbxVeiculo;
     private javax.swing.JScrollPane jScrollPane1;
     private javax.swing.JScrollPane jScrollPane2;
     private javax.swing.JLabel lblId;
@@ -411,8 +523,9 @@ public class FrmCadastrarRomaneio extends javax.swing.JFrame {
     private javax.swing.JList<String> lstNF;
     private javax.swing.JTable tblNF;
     private javax.swing.JTextField txtId;
-    private javax.swing.JTextField txtId1;
+    private javax.swing.JTextField txtIdMotorista;
     private javax.swing.JTextField txtPesquisar;
+    private javax.swing.JTextField txtPlacaVeiculo;
     // End of variables declaration//GEN-END:variables
 
     private void habilitarCampos(boolean b) {
@@ -452,67 +565,30 @@ public class FrmCadastrarRomaneio extends javax.swing.JFrame {
     }
 
     private void limparCampos() {
-        txtId.setText("");
-        cbxVeiculo.setSelectedIndex(0);
-        cbxMotorista.setSelectedIndex(0);
-    }
-/*
-    private void preencherCampos(Integer id) {
-        Motorista obj = dao.findById(id);
-        txtId.setText(String.valueOf(obj.getId()));
-        txtNome.setText(obj.getNome());
-        cbxTipoCarteira.setSelectedItem(obj.getCategoriaCnh());
-    }
-
-    private void inserirRegistro() {
-        if(!validarCampos())
-        {
-            JOptionPane.showMessageDialog(this, "Os dados preenchidos estão inválidos!", "Erro", JOptionPane.ERROR_MESSAGE);
-            return;
-        }
+        DefaultListModel<String> lstModel = new DefaultListModel<>();
+        lstNF.setModel(lstModel);
         
-        Motorista obj = new Motorista();
-        obj.setNome(txtNome.getText());
-        obj.setCategoriaCnh(String.valueOf(cbxTipoCarteira.getSelectedItem()).charAt(0));
-        
-        try {
-            dao.insert(obj);
-        } catch (DatabaseException e) {
-            JOptionPane.showMessageDialog(this, "Não foi possível inserir o registro!", "Erro", JOptionPane.ERROR_MESSAGE);
-        }
-        
-        JOptionPane.showMessageDialog(this, "O registro foi inserido com sucesso!");
-        atualizarTabela();
-        limparCampos();
-        estadoOperacao = EstadoOperacao.OCIOSO;
-    }
-
-    private void editarRegistro() {
-        if(!validarCampos())
-        {
-            JOptionPane.showMessageDialog(this, "Os dados preenchidos estão inválidos!", "Erro", JOptionPane.ERROR_MESSAGE);
-            return;
-        }
-        
-        Motorista obj = new Motorista();
-        obj.setId(Integer.parseInt(txtId.getText()));
-        obj.setNome(txtNome.getText());
-        obj.setCategoriaCnh(String.valueOf(cbxTipoCarteira.getSelectedItem()).charAt(0));
-        
-        try {
-            dao.update(obj);
-        } catch (DatabaseException e) {
-            JOptionPane.showMessageDialog(this, "Não foi possível editar o registro!", "Erro", JOptionPane.ERROR_MESSAGE);
-        }
-        
-        JOptionPane.showMessageDialog(this, "O registro foi editado com sucesso!");
-        atualizarTabela();
-        limparCampos();
-        estadoOperacao = EstadoOperacao.OCIOSO;
+        txtPlacaVeiculo.setText("");
+        txtIdMotorista.setText("");
     }
 
     private boolean validarCampos() {
-        return !txtNome.getText().isEmpty();
+        String placa = txtPlacaVeiculo.getText();
+        placa = placa.replace(" ", "").replace("-", "");
+        if(placa.isEmpty()) {
+            return false;
+        }
+        
+        try {
+            Integer idMotorista = Integer.parseInt(txtIdMotorista.getText());
+        } catch (NumberFormatException e) {
+            return false;
+        }
+        
+        if(lstNF.getModel().getSize() == 0) {
+            return false;
+        }
+        
+        return true;
     }
-*/
 }
