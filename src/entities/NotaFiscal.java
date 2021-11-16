@@ -20,7 +20,7 @@ public class NotaFiscal {
     private Romaneio romaneio;
     private Cliente cliente;
     private Instant dataEmissao;
-    private Set<ProdutoPedido> produtos = new HashSet<>();
+    private Set<ProdutoNotaFiscal> produtos = new HashSet<>();
 
     public NotaFiscal() {
     }
@@ -64,18 +64,18 @@ public class NotaFiscal {
         this.dataEmissao = dataEmissao;
     }
 
-    public Set<ProdutoPedido> getProdutos() {
+    public Set<ProdutoNotaFiscal> getProdutos() {
         return produtos;
     }
     
-    public void adicionarItem(ProdutoPedido item) {
+    public void adicionarItem(ProdutoNotaFiscal item) {
         if(produtos.contains(item)) {
             produtos.remove(item);
         }
         produtos.add(item);
     }
     
-    public void removerItem(ProdutoPedido item) {
+    public void removerItem(ProdutoNotaFiscal item) {
         produtos.remove(item);
     }
 

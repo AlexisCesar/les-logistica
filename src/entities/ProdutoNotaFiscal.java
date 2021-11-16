@@ -11,13 +11,13 @@ import java.util.Objects;
  *
  * @author ADM
  */
-public class ProdutoPedido {
+public class ProdutoNotaFiscal {
     
     private NotaFiscal notaFiscal;
     private Produto produto;
     private Integer quantidade;
 
-    public ProdutoPedido(NotaFiscal notaFiscal, Produto produto, Integer quantidade) {
+    public ProdutoNotaFiscal(NotaFiscal notaFiscal, Produto produto, Integer quantidade) {
         this.notaFiscal = notaFiscal;
         this.produto = produto;
         this.quantidade = quantidade;
@@ -70,7 +70,7 @@ public class ProdutoPedido {
         if (getClass() != obj.getClass()) {
             return false;
         }
-        final ProdutoPedido other = (ProdutoPedido) obj;
+        final ProdutoNotaFiscal other = (ProdutoNotaFiscal) obj;
         if (!Objects.equals(this.notaFiscal, other.notaFiscal)) {
             return false;
         }

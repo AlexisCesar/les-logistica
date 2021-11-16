@@ -5,19 +5,19 @@
  */
 package entities.dao;
 
-import entities.ProdutoPedido;
+import entities.ProdutoNotaFiscal;
 import java.util.List;
 
 /**
  *
  * @author ADM
  */
-public interface IProdutoPedidoDao {
+public interface IProdutoNotaFiscalDao {
     
-    void insert(ProdutoPedido produtopedido);
-    ProdutoPedido findById(Integer idNotaFiscal, Integer idProduto);
-    List<ProdutoPedido> findAll();
-    void update(ProdutoPedido produtopedido);
+    void insert(ProdutoNotaFiscal produtopedido);
+    ProdutoNotaFiscal findById(Integer idNotaFiscal, Integer idProduto);
+    List<ProdutoNotaFiscal> findAll();
+    void update(ProdutoNotaFiscal produtopedido);
     void delete(Integer idNotaFiscal, Integer idProduto);
     
 }
