@@ -93,7 +93,7 @@ public class RomaneioDao implements IRomaneioDao {
     public List<Romaneio> findAll() {
         List<Romaneio> lstRomaneio = new ArrayList<>();
         
-        Romaneio obj = new Romaneio();
+        Romaneio obj = null;
         
         Connection conexao = null;
         
