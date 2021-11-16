@@ -5,8 +5,10 @@
 package gui;
 
 import entities.Motorista;
+import entities.Romaneio;
 import entities.dao.IMotoristaDao;
 import entities.dao.IProdutoNotaFiscalDao;
+import entities.dao.IRomaneioDao;
 import entities.dao.implementation.MotoristaDao;
 import entities.dao.implementation.NotaFiscalDao;
 import entities.dao.implementation.ProdutoDao;
@@ -24,20 +26,20 @@ import javax.swing.table.DefaultTableModel;
  */
 public class FrmListarRomaneio extends javax.swing.JFrame {
 
-    private IMotoristaDao dao;
+    private IRomaneioDao romaneioDao;
     private EstadoOperacao estadoOperacao;
     
     /**
      * Creates new form FrmCadastrarMotorista
      */
-    public FrmListarRomaneio() {
+    public FrmListarRomaneio(IRomaneioDao romaneioDao) {
 	initComponents();
         this.setLocationRelativeTo(null);
         
-        this.dao = null;
+        this.romaneioDao = romaneioDao;
         this.estadoOperacao = EstadoOperacao.OCIOSO;
         
-        //atualizarTabela();
+        atualizarTabela();
     }
 
     /**
@@ -50,7 +52,7 @@ public class FrmListarRomaneio extends javax.swing.JFrame {
         cbxBusca = new javax.swing.JComboBox<>();
         btnVoltar = new javax.swing.JButton();
         jScrollPane2 = new javax.swing.JScrollPane();
-        tblMotoristas = new javax.swing.JTable();
+        tblRomaneios = new javax.swing.JTable();
         lblPesquisar = new javax.swing.JLabel();
         txtPesquisar = new javax.swing.JTextField();
         btnPesquisar = new javax.swing.JButton();
@@ -73,7 +75,7 @@ public class FrmListarRomaneio extends javax.swing.JFrame {
             }
         });
 
-        tblMotoristas.setModel(new javax.swing.table.DefaultTableModel(
+        tblRomaneios.setModel(new javax.swing.table.DefaultTableModel(
             new Object [][] {
                 {null, null, null},
                 {null, null, null},
@@ -132,7 +134,7 @@ public class FrmListarRomaneio extends javax.swing.JFrame {
                 return canEdit [columnIndex];
             }
         });
-        jScrollPane2.setViewportView(tblMotoristas);
+        jScrollPane2.setViewportView(tblRomaneios);
 
         lblPesquisar.setText("Pesquisar");
 
@@ -241,27 +243,7 @@ public class FrmListarRomaneio extends javax.swing.JFrame {
     }//GEN-LAST:event_btnVoltarActionPerformed
 
     private void btnPesquisarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnPesquisarActionPerformed
-        DefaultTableModel model = (DefaultTableModel) tblMotoristas.getModel();
-        Utils.limparTabela(model);
         
-        int id;
-        try {
-            id = Integer.parseInt(txtPesquisar.getText());
-        } catch (NumberFormatException e) {
-            JOptionPane.showMessageDialog(this, "Insira um número de ID válido!", "Erro", JOptionPane.ERROR_MESSAGE);
-            return;
-        }
-        
-        Motorista obj = dao.findById(id);
-        
-        if(obj.getId() == null)
-            return;
-        
-        model.addRow(new String[] {
-            String.valueOf(obj.getId()),
-            obj.getNome(),
-            String.valueOf(obj.getCategoriaCnh())
-        });
     }//GEN-LAST:event_btnPesquisarActionPerformed
 
     private void btnIncluirActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnIncluirActionPerformed
@@ -278,20 +260,7 @@ public class FrmListarRomaneio extends javax.swing.JFrame {
     }//GEN-LAST:event_btnAlterarActionPerformed
 
     private void btnExcluirActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnExcluirActionPerformed
-        DefaultTableModel model = (DefaultTableModel) tblMotoristas.getModel();
         
-        if(tblMotoristas.getSelectedRow() == -1){
-            JOptionPane.showMessageDialog(this, "Primeiro, selecione um registro na tabela.");
-            return;
-        }
-        
-        Integer id = Integer.parseInt(String.valueOf(model.getValueAt(tblMotoristas.getSelectedRow(), 0)));
-        
-        if(JOptionPane.showConfirmDialog(this, "Deseja excluir o motorista de ID " + id + "?", "Excluir", JOptionPane.YES_NO_OPTION) == JOptionPane.YES_OPTION) {
-            dao.delete(id);
-            JOptionPane.showMessageDialog(this, "O registro foi removido.");
-            atualizarTabela();
-        }
     }//GEN-LAST:event_btnExcluirActionPerformed
 
     private void btnCancelarPesquisaActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnCancelarPesquisaActionPerformed
@@ -311,22 +280,22 @@ public class FrmListarRomaneio extends javax.swing.JFrame {
     private javax.swing.JScrollPane jScrollPane2;
     private javax.swing.JLabel lblPesquisar;
     private javax.swing.JLabel lblProcurarPor;
-    private javax.swing.JTable tblMotoristas;
+    private javax.swing.JTable tblRomaneios;
     private javax.swing.JTextField txtPesquisar;
     // End of variables declaration//GEN-END:variables
 
 
     private void atualizarTabela() {
-        DefaultTableModel model = (DefaultTableModel) tblMotoristas.getModel();
+        DefaultTableModel model = (DefaultTableModel) tblRomaneios.getModel();
         Utils.limparTabela(model);
         
-        List<Motorista> motoristas = dao.findAll();
+        List<Romaneio> romaneios = romaneioDao.findAll();
         
-        for(Motorista motorista : motoristas) {
+        for(Romaneio romaneio : romaneios) {
             model.addRow(new String[] {
-                String.valueOf(motorista.getId()),
-                motorista.getNome(),
-                String.valueOf(motorista.getCategoriaCnh())
+                String.valueOf(romaneio.getId()),
+                String.valueOf(romaneio.getMotorista().getNome()),
+                "fodase"
             });
         }
     }

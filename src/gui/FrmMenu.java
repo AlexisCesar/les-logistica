@@ -6,6 +6,7 @@
 package gui;
 
 import entities.dao.implementation.MotoristaDao;
+import entities.dao.implementation.RomaneioDao;
 import entities.dao.implementation.VeiculoDao;
 import java.awt.Image;
 import java.awt.Toolkit;
@@ -150,7 +151,7 @@ public class FrmMenu extends javax.swing.JFrame {
     }//GEN-LAST:event_btnCadastroMotoristaActionPerformed
 
     private void btnCadastroRomaneioActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnCadastroRomaneioActionPerformed
-        new FrmListarRomaneio().setVisible(true);
+        new FrmListarRomaneio(new RomaneioDao(new VeiculoDao(), new MotoristaDao())).setVisible(true);
         this.dispose();
     }//GEN-LAST:event_btnCadastroRomaneioActionPerformed
 
