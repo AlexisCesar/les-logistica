@@ -97,6 +97,7 @@
     <Component class="javax.swing.JButton" name="btnConsultarNotasFiscais">
       <Properties>
         <Property name="text" type="java.lang.String" value="Consulta de Notas Fiscais"/>
+        <Property name="enabled" type="boolean" value="false"/>
       </Properties>
     </Component>
     <Component class="javax.swing.JButton" name="btnCadastroRomaneio">

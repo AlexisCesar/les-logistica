@@ -19,6 +19,7 @@ import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.time.Instant;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -71,14 +72,18 @@ public class NotaFiscalDao implements INotaFiscalDao {
             if(retorno.next()){
                 obj = new NotaFiscal();
                 obj.setId(retorno.getInt("id_NotaFiscal"));
-                obj.setDataEmissao(Instant.parse(retorno.getString("dataemissao")));
+                obj.setDataEmissao(new SimpleDateFormat("dd/MM/yyyy").parse(retorno.getString("dataemissao")).toInstant());
                 //obj.setRomaneio...
                 obj.setCliente(new ClienteDao().findById(retorno.getInt(("id_cliente"))));
-                //obj.setEntrega...
+//                if(retorno.getInt(("id_romaneio")) != 0) {
+//                    
+//                }
             }
             
         } catch (SQLException ex) {
             Logger.getLogger(VeiculoDao.class.getName()).log(Level.SEVERE, null, ex);
+        } catch (ParseException ex) {
+            Logger.getLogger(NotaFiscalDao.class.getName()).log(Level.SEVERE, null, ex);
         } finally {
             Database.closeConnection(conexao);
         }
@@ -107,7 +112,6 @@ public class NotaFiscalDao implements INotaFiscalDao {
                 obj.setDataEmissao(new SimpleDateFormat("dd/MM/yyyy").parse(retorno.getString("dataemissao")).toInstant());
                 //obj.setRomaneio...
                 obj.setCliente(new ClienteDao().findById(retorno.getInt(("id_cliente"))));
-                //obj.setEntrega...
                 lista.add(obj);
             }
             
@@ -134,8 +138,7 @@ public class NotaFiscalDao implements INotaFiscalDao {
                                                                UPDATE NotasFiscais SET dataemissao = ?, id_romaneio = ?, id_cliente = ? 
                                                                WHERE id_NotaFiscal = ?;
                                                                """);
-            //query.setString(1, notaFiscal.getDataEmissao().toString());
-            query.setString(1, "01/01/1999");
+            query.setString(1,  new SimpleDateFormat("dd/MM/yyyy").format(Date.from(notaFiscal.getDataEmissao())));
             query.setInt(2, notaFiscal.getRomaneio().getId());
             query.setInt(3, notaFiscal.getCliente().getId());
             

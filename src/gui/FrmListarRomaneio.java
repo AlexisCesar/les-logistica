@@ -6,7 +6,10 @@ package gui;
 
 import entities.Motorista;
 import entities.dao.IMotoristaDao;
+import entities.dao.IProdutoNotaFiscalDao;
 import entities.dao.implementation.NotaFiscalDao;
+import entities.dao.implementation.ProdutoDao;
+import entities.dao.implementation.ProdutoNotaFiscalDao;
 import gui.enums.EstadoOperacao;
 import gui.utils.Utils;
 import java.util.List;
@@ -115,7 +118,7 @@ public class FrmListarRomaneio extends javax.swing.JFrame {
                 {null, null, null}
             },
             new String [] {
-                "ID", "Nome", "CNH"
+                "ID", "Responsável", "Status"
             }
         ) {
             boolean[] canEdit = new boolean [] {
@@ -259,7 +262,9 @@ public class FrmListarRomaneio extends javax.swing.JFrame {
     }//GEN-LAST:event_btnPesquisarActionPerformed
 
     private void btnIncluirActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnIncluirActionPerformed
-        new FrmCadastrarRomaneio(new NotaFiscalDao()).setVisible(true);
+        new FrmCadastrarRomaneio(new NotaFiscalDao(),
+                                    new ProdutoNotaFiscalDao(new ProdutoDao(), new NotaFiscalDao()))
+                                    .setVisible(true);
         this.dispose();
     }//GEN-LAST:event_btnIncluirActionPerformed
 

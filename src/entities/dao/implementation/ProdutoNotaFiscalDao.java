@@ -96,7 +96,7 @@ public class ProdutoNotaFiscalDao implements IProdutoNotaFiscalDao {
     }
 
     @Override
-    public List<ProdutoNotaFiscal> findAll() {
+    public List<ProdutoNotaFiscal> findAll(Integer idNotaFiscal) {
         List<ProdutoNotaFiscal> objList = new ArrayList<>();
         
         Connection conexao = null;
@@ -104,7 +104,9 @@ public class ProdutoNotaFiscalDao implements IProdutoNotaFiscalDao {
         try {
             conexao = Database.getConnection();
             
-            PreparedStatement query = conexao.prepareStatement("SELECT * FROM ProdutoNotaFiscal;");
+            PreparedStatement query = conexao.prepareStatement("SELECT * FROM ProdutoNotaFiscal WHERE id_notafiscal = ?;");
+            
+            query.setInt(1, idNotaFiscal);
             
             ResultSet retorno = query.executeQuery();
             

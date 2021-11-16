@@ -142,7 +142,7 @@ public class FrmLogin extends javax.swing.JFrame {
     }// </editor-fold>//GEN-END:initComponents
 
     private void txtEsqueceuSenhaMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_txtEsqueceuSenhaMouseClicked
-        JOptionPane.showMessageDialog(this, "Não implementado ainda :D");
+        JOptionPane.showMessageDialog(this, "Não implementado ainda");
     }//GEN-LAST:event_txtEsqueceuSenhaMouseClicked
 
     private void btnEntrarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnEntrarActionPerformed

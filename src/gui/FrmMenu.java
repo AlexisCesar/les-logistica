@@ -70,6 +70,7 @@ public class FrmMenu extends javax.swing.JFrame {
         });
 
         btnConsultarNotasFiscais.setText("Consulta de Notas Fiscais");
+        btnConsultarNotasFiscais.setEnabled(false);
 
         btnCadastroRomaneio.setText("Cadastro de Romaneio");
         btnCadastroRomaneio.addActionListener(new java.awt.event.ActionListener() {

@@ -4,14 +4,15 @@
  */
 package gui;
 
-import entities.Motorista;
 import entities.NotaFiscal;
-import entities.dao.IMotoristaDao;
+import entities.ProdutoNotaFiscal;
 import entities.dao.INotaFiscalDao;
-import entities.dao.implementation.NotaFiscalDao;
-import entities.dao.implementation.exceptions.DatabaseException;
+import entities.dao.IProdutoNotaFiscalDao;
 import gui.enums.EstadoOperacao;
 import gui.utils.Utils;
+import java.text.DecimalFormat;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 import java.util.List;
 import javax.swing.JOptionPane;
 import javax.swing.table.DefaultTableModel;
@@ -22,17 +23,19 @@ import javax.swing.table.DefaultTableModel;
  */
 public class FrmCadastrarRomaneio extends javax.swing.JFrame {
 
-    private INotaFiscalDao dao;
+    private INotaFiscalDao notaFiscalDao;
+    private IProdutoNotaFiscalDao produtoNotaFiscalDao;
     private EstadoOperacao estadoOperacao;
     
     /**
      * Creates new form FrmCadastrarMotorista
      */
-    public FrmCadastrarRomaneio(NotaFiscalDao daoNF) {
+    public FrmCadastrarRomaneio(INotaFiscalDao daoNF, IProdutoNotaFiscalDao daoItem) {
 	initComponents();
         this.setLocationRelativeTo(null);
         
-        this.dao = daoNF;
+        this.notaFiscalDao = daoNF;
+        this.produtoNotaFiscalDao = daoItem;
         this.estadoOperacao = EstadoOperacao.OCIOSO;
         
         habilitarCampos(false);
@@ -95,57 +98,57 @@ public class FrmCadastrarRomaneio extends javax.swing.JFrame {
 
         tblNF.setModel(new javax.swing.table.DefaultTableModel(
             new Object [][] {
-                {null, null, null, null},
-                {null, null, null, null},
-                {null, null, null, null},
-                {null, null, null, null},
-                {null, null, null, null},
-                {null, null, null, null},
-                {null, null, null, null},
-                {null, null, null, null},
-                {null, null, null, null},
-                {null, null, null, null},
-                {null, null, null, null},
-                {null, null, null, null},
-                {null, null, null, null},
-                {null, null, null, null},
-                {null, null, null, null},
-                {null, null, null, null},
-                {null, null, null, null},
-                {null, null, null, null},
-                {null, null, null, null},
-                {null, null, null, null},
-                {null, null, null, null},
-                {null, null, null, null},
-                {null, null, null, null},
-                {null, null, null, null},
-                {null, null, null, null},
-                {null, null, null, null},
-                {null, null, null, null},
-                {null, null, null, null},
-                {null, null, null, null},
-                {null, null, null, null},
-                {null, null, null, null},
-                {null, null, null, null},
-                {null, null, null, null},
-                {null, null, null, null},
-                {null, null, null, null},
-                {null, null, null, null},
-                {null, null, null, null},
-                {null, null, null, null},
-                {null, null, null, null},
-                {null, null, null, null},
-                {null, null, null, null},
-                {null, null, null, null},
-                {null, null, null, null},
-                {null, null, null, null}
+                {null, null, null, null, null, null},
+                {null, null, null, null, null, null},
+                {null, null, null, null, null, null},
+                {null, null, null, null, null, null},
+                {null, null, null, null, null, null},
+                {null, null, null, null, null, null},
+                {null, null, null, null, null, null},
+                {null, null, null, null, null, null},
+                {null, null, null, null, null, null},
+                {null, null, null, null, null, null},
+                {null, null, null, null, null, null},
+                {null, null, null, null, null, null},
+                {null, null, null, null, null, null},
+                {null, null, null, null, null, null},
+                {null, null, null, null, null, null},
+                {null, null, null, null, null, null},
+                {null, null, null, null, null, null},
+                {null, null, null, null, null, null},
+                {null, null, null, null, null, null},
+                {null, null, null, null, null, null},
+                {null, null, null, null, null, null},
+                {null, null, null, null, null, null},
+                {null, null, null, null, null, null},
+                {null, null, null, null, null, null},
+                {null, null, null, null, null, null},
+                {null, null, null, null, null, null},
+                {null, null, null, null, null, null},
+                {null, null, null, null, null, null},
+                {null, null, null, null, null, null},
+                {null, null, null, null, null, null},
+                {null, null, null, null, null, null},
+                {null, null, null, null, null, null},
+                {null, null, null, null, null, null},
+                {null, null, null, null, null, null},
+                {null, null, null, null, null, null},
+                {null, null, null, null, null, null},
+                {null, null, null, null, null, null},
+                {null, null, null, null, null, null},
+                {null, null, null, null, null, null},
+                {null, null, null, null, null, null},
+                {null, null, null, null, null, null},
+                {null, null, null, null, null, null},
+                {null, null, null, null, null, null},
+                {null, null, null, null, null, null}
             },
             new String [] {
-                "ID", "Nome do Cliente", "Data de Emissão", "Valor Total"
+                "ID", "Nome do Cliente", "Data de Emissão", "Valor Total", "Embalagens", "Entregue"
             }
         ) {
             boolean[] canEdit = new boolean [] {
-                false, false, false, false
+                false, false, false, false, false, false
             };
 
             public boolean isCellEditable(int rowIndex, int columnIndex) {
@@ -175,11 +178,6 @@ public class FrmCadastrarRomaneio extends javax.swing.JFrame {
             }
         });
 
-        lstNF.setModel(new javax.swing.AbstractListModel<String>() {
-            String[] strings = { "NF - 120", "NF - 69", "NF - 420", "NF - 666", "NF - 42" };
-            public int getSize() { return strings.length; }
-            public String getElementAt(int i) { return strings[i]; }
-        });
         jScrollPane1.setViewportView(lstNF);
 
         btnAdicionar.setText("Adicionar");
@@ -190,7 +188,6 @@ public class FrmCadastrarRomaneio extends javax.swing.JFrame {
 
         lblMotorista.setText("Motorista");
 
-        cbxVeiculo.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "Corsa", "Ferrari", "Uno", "Relampago Marquinhos", " " }));
         cbxVeiculo.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 cbxVeiculoActionPerformed(evt);
@@ -199,7 +196,6 @@ public class FrmCadastrarRomaneio extends javax.swing.JFrame {
 
         txtId1.setEditable(false);
 
-        cbxMotorista.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "Estevão Rei Delas", "Matilda Barraqueira", "MC Carol", "MC Poze Passa o Rodo" }));
         cbxMotorista.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 cbxMotoristaActionPerformed(evt);
@@ -215,35 +211,36 @@ public class FrmCadastrarRomaneio extends javax.swing.JFrame {
             .addGroup(layout.createSequentialGroup()
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addGroup(layout.createSequentialGroup()
-                        .addContainerGap()
                         .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                             .addGroup(layout.createSequentialGroup()
-                                .addComponent(btnCancelar, javax.swing.GroupLayout.PREFERRED_SIZE, 75, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                                .addComponent(btnGravar)
-                                .addGap(12, 12, 12))
-                            .addGroup(layout.createSequentialGroup()
-                                .addComponent(lblId)
-                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                                .addComponent(txtId, javax.swing.GroupLayout.PREFERRED_SIZE, 150, javax.swing.GroupLayout.PREFERRED_SIZE))
-                            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
+                                .addContainerGap()
                                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                                    .addComponent(lblVeiculo)
-                                    .addComponent(lblMotorista))
-                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 9, Short.MAX_VALUE)
-                                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
-                                    .addComponent(cbxMotorista, 0, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                                    .addComponent(cbxVeiculo, 0, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)))))
-                    .addGroup(layout.createSequentialGroup()
-                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                                    .addGroup(layout.createSequentialGroup()
+                                        .addComponent(btnCancelar, javax.swing.GroupLayout.PREFERRED_SIZE, 75, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                                        .addComponent(btnGravar)
+                                        .addGap(12, 12, 12))
+                                    .addGroup(layout.createSequentialGroup()
+                                        .addComponent(lblId)
+                                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                                        .addComponent(txtId, javax.swing.GroupLayout.PREFERRED_SIZE, 150, javax.swing.GroupLayout.PREFERRED_SIZE))
+                                    .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
+                                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                                            .addComponent(lblVeiculo)
+                                            .addComponent(lblMotorista))
+                                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                                            .addComponent(cbxMotorista, 0, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                                            .addComponent(cbxVeiculo, 0, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)))))
                             .addGroup(layout.createSequentialGroup()
                                 .addGap(59, 59, 59)
-                                .addComponent(btnRemover))
-                            .addGroup(layout.createSequentialGroup()
-                                .addGap(20, 20, 20)
-                                .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 160, javax.swing.GroupLayout.PREFERRED_SIZE)))
-                        .addGap(0, 0, Short.MAX_VALUE)))
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                                .addComponent(btnRemover)
+                                .addGap(0, 0, Short.MAX_VALUE)))
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED))
+                    .addGroup(layout.createSequentialGroup()
+                        .addContainerGap()
+                        .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 170, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)))
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
                     .addComponent(jScrollPane2, javax.swing.GroupLayout.PREFERRED_SIZE, 546, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addGroup(layout.createSequentialGroup()
@@ -261,7 +258,7 @@ public class FrmCadastrarRomaneio extends javax.swing.JFrame {
                             .addGroup(layout.createSequentialGroup()
                                 .addGap(4, 4, 4)
                                 .addComponent(btnAdicionar)
-                                .addGap(18, 18, 18)
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                                 .addComponent(btnDetalhes)))
                         .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                             .addGroup(layout.createSequentialGroup()
@@ -353,16 +350,28 @@ public class FrmCadastrarRomaneio extends javax.swing.JFrame {
             return;
         }
         
-        NotaFiscal obj = dao.findById(id);
+        NotaFiscal nf = notaFiscalDao.findById(id);
         
-        if(obj.getId() == null)
+        if(nf.getId() == null)
             return;
         
+        double valorTotal = 0f;
+        int quantidadeEmbalagens = 0;
+
+        List<ProdutoNotaFiscal> itens = produtoNotaFiscalDao.findAll(nf.getId());
+
+        for(ProdutoNotaFiscal item : itens) {
+            valorTotal += item.getQuantidade() * item.getProduto().getValor();
+            quantidadeEmbalagens += item.getQuantidade();
+        }
+        
         model.addRow(new String[] {
-            String.valueOf(obj.getId()),
-                "Cliente Fake",
-                "01/01/2020",
-                String.valueOf(99.90)
+            String.valueOf(nf.getId()),
+            nf.getCliente().getNome(),
+            new SimpleDateFormat("dd/MM/yyyy").format(Date.from(nf.getDataEmissao())),
+            String.valueOf(new DecimalFormat("#,##0.00").format(valorTotal)),
+            String.valueOf(quantidadeEmbalagens),
+            "Não"
         });
     }//GEN-LAST:event_btnPesquisarActionPerformed
 
@@ -414,15 +423,31 @@ public class FrmCadastrarRomaneio extends javax.swing.JFrame {
         DefaultTableModel model = (DefaultTableModel) tblNF.getModel();
         Utils.limparTabela(model);
         
-        List<NotaFiscal> nfs = dao.findAll();
+        List<NotaFiscal> nfs = notaFiscalDao.findAll();
         
         for(NotaFiscal nf : nfs) {
+            
+            double valorTotal = 0f;
+            int quantidadeEmbalagens = 0;
+            
+            List<ProdutoNotaFiscal> itens = produtoNotaFiscalDao.findAll(nf.getId());
+            
+            for(ProdutoNotaFiscal item : itens) {
+                valorTotal += item.getQuantidade() * item.getProduto().getValor();
+                quantidadeEmbalagens += item.getQuantidade();
+            }
+            
             model.addRow(new String[] {
                 String.valueOf(nf.getId()),
-                "Cliente Fake",
-                "01/01/2020",
-                String.valueOf(99.90)
+                nf.getCliente().getNome(),
+                new SimpleDateFormat("dd/MM/yyyy").format(Date.from(nf.getDataEmissao())),
+                String.valueOf(new DecimalFormat("#,##0.00").format(valorTotal)),
+                String.valueOf(quantidadeEmbalagens),
+                "Não"
             });
+            
+            
+            
         }
     }
 

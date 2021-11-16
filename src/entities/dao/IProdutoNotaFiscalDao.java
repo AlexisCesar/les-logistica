@@ -16,7 +16,7 @@ public interface IProdutoNotaFiscalDao {
     
     void insert(ProdutoNotaFiscal produtopedido);
     ProdutoNotaFiscal findById(Integer idNotaFiscal, Integer idProduto);
-    List<ProdutoNotaFiscal> findAll();
+    List<ProdutoNotaFiscal> findAll(Integer idNotaFiscal);
     void update(ProdutoNotaFiscal produtopedido);
     void delete(Integer idNotaFiscal, Integer idProduto);
     
