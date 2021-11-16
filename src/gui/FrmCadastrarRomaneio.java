@@ -12,6 +12,9 @@ import entities.dao.IMotoristaDao;
 import entities.dao.INotaFiscalDao;
 import entities.dao.IProdutoNotaFiscalDao;
 import entities.dao.IVeiculoDao;
+import entities.dao.implementation.MotoristaDao;
+import entities.dao.implementation.RomaneioDao;
+import entities.dao.implementation.VeiculoDao;
 import gui.enums.EstadoOperacao;
 import gui.utils.Utils;
 import java.text.DecimalFormat;
@@ -337,7 +340,7 @@ public class FrmCadastrarRomaneio extends javax.swing.JFrame {
 
     /**/
     private void btnVoltarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnVoltarActionPerformed
-        new FrmListarRomaneio().setVisible(true);
+        new FrmListarRomaneio(new RomaneioDao(new VeiculoDao(), new MotoristaDao())).setVisible(true);
         this.dispose();
     }//GEN-LAST:event_btnVoltarActionPerformed
 
@@ -448,7 +451,7 @@ public class FrmCadastrarRomaneio extends javax.swing.JFrame {
         
         //Após inserir
         JOptionPane.showMessageDialog(this, "Registro inserido com sucesso!");
-        new FrmListarRomaneio().setVisible(true);
+        new FrmListarRomaneio(new RomaneioDao(new VeiculoDao(), new MotoristaDao())).setVisible(true);
         this.dispose();
     }//GEN-LAST:event_btnGravarActionPerformed
 
