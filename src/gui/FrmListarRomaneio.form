@@ -220,6 +220,7 @@
     <Component class="javax.swing.JButton" name="btnRastrear">
       <Properties>
         <Property name="text" type="java.lang.String" value="Rastrear Romaneio"/>
+        <Property name="enabled" type="boolean" value="false"/>
       </Properties>
     </Component>
   </SubComponents>

@@ -72,11 +72,8 @@ public class NotaFiscalDao implements INotaFiscalDao {
                 obj = new NotaFiscal();
                 obj.setId(retorno.getInt("id_NotaFiscal"));
                 obj.setDataEmissao(new SimpleDateFormat("dd/MM/yyyy").parse(retorno.getString("dataemissao")).toInstant());
-                //obj.setRomaneio...
+                obj.setRomaneio(new RomaneioDao(new VeiculoDao(), new MotoristaDao()).findById(retorno.getInt("id_romaneio")));
                 obj.setCliente(new ClienteDao().findById(retorno.getInt(("id_cliente"))));
-//                if(retorno.getInt(("id_romaneio")) != 0) {
-//                    
-//                }
             }
             
         } catch (SQLException ex) {
@@ -88,6 +85,41 @@ public class NotaFiscalDao implements INotaFiscalDao {
         }
         
         return obj;
+    }
+    
+    public List<NotaFiscal> findByRomaneioId(Integer idRomaneio) {
+        List<NotaFiscal> lista = new ArrayList<>();
+        
+        NotaFiscal obj = new NotaFiscal();
+        
+        Connection conexao = null;
+        
+        try {
+            conexao = Database.getConnection();
+            
+            PreparedStatement query = conexao.prepareStatement("SELECT * FROM NotasFiscais WHERE id_romaneio = ?;");
+            query.setInt(1, idRomaneio);
+            
+            ResultSet retorno = query.executeQuery();
+            
+            while(retorno.next()){
+                obj = new NotaFiscal();
+                obj.setId(retorno.getInt("id_NotaFiscal"));
+                obj.setDataEmissao(new SimpleDateFormat("dd/MM/yyyy").parse(retorno.getString("dataemissao")).toInstant());
+                obj.setRomaneio(new RomaneioDao(new VeiculoDao(), new MotoristaDao()).findById(retorno.getInt("id_romaneio")));
+                obj.setCliente(new ClienteDao().findById(retorno.getInt(("id_cliente"))));
+                lista.add(obj);
+            }
+            
+        } catch (SQLException ex) {
+            Logger.getLogger(VeiculoDao.class.getName()).log(Level.SEVERE, null, ex);
+        } catch (ParseException ex) {
+            Logger.getLogger(NotaFiscalDao.class.getName()).log(Level.SEVERE, null, ex);
+        } finally {
+            Database.closeConnection(conexao);
+        }
+        
+        return lista;
     }
 
     @Override
@@ -109,7 +141,7 @@ public class NotaFiscalDao implements INotaFiscalDao {
                 obj = new NotaFiscal();
                 obj.setId(retorno.getInt("id_NotaFiscal"));
                 obj.setDataEmissao(new SimpleDateFormat("dd/MM/yyyy").parse(retorno.getString("dataemissao")).toInstant());
-                //obj.setRomaneio...
+                obj.setRomaneio(new RomaneioDao(new VeiculoDao(), new MotoristaDao()).findById(retorno.getInt("id_romaneio")));
                 obj.setCliente(new ClienteDao().findById(retorno.getInt(("id_cliente"))));
                 lista.add(obj);
             }
@@ -138,8 +170,15 @@ public class NotaFiscalDao implements INotaFiscalDao {
                                                                WHERE id_NotaFiscal = ?;
                                                                """);
             query.setString(1,  new SimpleDateFormat("dd/MM/yyyy").format(Date.from(notaFiscal.getDataEmissao())));
-            query.setInt(2, notaFiscal.getRomaneio().getId());
+            
+            if(notaFiscal.getRomaneio().getId() == null) {
+                query.setNull(2, 0);
+            } else {
+                query.setInt(2, notaFiscal.getRomaneio().getId());
+            }
+            
             query.setInt(3, notaFiscal.getCliente().getId());
+            query.setInt(4, notaFiscal.getId());
             
             int affectedRows = query.executeUpdate();
             

@@ -11,6 +11,7 @@ import entities.dao.IMotoristaDao;
 import entities.dao.IRomaneioDao;
 import entities.dao.IVeiculoDao;
 import entities.dao.implementation.exceptions.DatabaseException;
+import entities.dao.implementation.exceptions.RegisterNotFoundException;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -35,7 +36,9 @@ public class RomaneioDao implements IRomaneioDao {
     }
     
     @Override
-    public void insert(Romaneio romaneio) {
+    public Integer insert(Romaneio romaneio) {
+        Integer generatedID = null;
+        
         Connection conexao = null;
         try {
             conexao = Database.getConnection();
@@ -43,7 +46,7 @@ public class RomaneioDao implements IRomaneioDao {
             PreparedStatement query = conexao.prepareStatement("""
                                                                INSERT INTO Romaneios(placa_veiculo, id_motorista)
                                                                VALUES (?, ?);
-                                                               """);
+                                                               """, PreparedStatement.RETURN_GENERATED_KEYS);
             query.setString(1, romaneio.getVeiculo().getPlaca());
             query.setInt(2, romaneio.getMotorista().getId());
             
@@ -52,11 +55,21 @@ public class RomaneioDao implements IRomaneioDao {
             if(affectedRows == 0)
                 throw new DatabaseException("Não foi possível salvar o registro no banco de dados.");
             
+            try(ResultSet generatedKeys = query.getGeneratedKeys()) {
+                if(generatedKeys.next()) {
+                    generatedID = generatedKeys.getInt(1);
+                } else {
+                    throw new DatabaseException("Não foi possível salvar o registro no banco de dados. ID não retornado.");
+                }
+            }
+            
         } catch (SQLException ex) {
             Logger.getLogger(VeiculoDao.class.getName()).log(Level.SEVERE, null, ex);
         } finally {
             Database.closeConnection(conexao);
         }
+        
+        return generatedID;
     }
 
     @Override
@@ -123,12 +136,62 @@ public class RomaneioDao implements IRomaneioDao {
 
     @Override
     public void update(Romaneio romaneio) {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        validarExistencia(romaneio.getId());
+        
+        Connection conexao = null;
+        try {
+            conexao = Database.getConnection();
+            
+            PreparedStatement query = conexao.prepareStatement("""
+                                                               UPDATE Romaneios SET placa_veiculo = ?, id_motorista = ? 
+                                                               WHERE id_romaneio = ?;
+                                                               """);
+            query.setString(1, romaneio.getVeiculo().getPlaca());
+            query.setString(2, String.valueOf(romaneio.getMotorista().getId()));
+            query.setInt(3, romaneio.getId());
+            
+            int affectedRows = query.executeUpdate();
+            
+            if(affectedRows == 0)
+                throw new DatabaseException("Não foi possível atualizar o registro no banco de dados.");
+            
+        } catch (SQLException ex) {
+            Logger.getLogger(VeiculoDao.class.getName()).log(Level.SEVERE, null, ex);
+        } finally {
+            Database.closeConnection(conexao);
+        }
     }
 
     @Override
     public void delete(Integer id) {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        validarExistencia(id);
+        
+        Connection conexao = null;
+        try {
+            conexao = Database.getConnection();
+            
+            PreparedStatement query = conexao.prepareStatement("DELETE FROM Romaneios WHERE id_romaneio = ?;");
+            query.setInt(1, id);
+            
+            int affectedRows = query.executeUpdate();
+            
+            if(affectedRows == 0)
+                throw new DatabaseException("Não foi possível remover o registro do banco de dados.");
+            
+        } catch (SQLException ex) {
+            Logger.getLogger(VeiculoDao.class.getName()).log(Level.SEVERE, null, ex);
+        } finally {
+            Database.closeConnection(conexao);
+        }
     }
+    private void validarExistencia(Integer id) {
+        
+        Romaneio obj = findById(id);
+        
+        if(obj.getId()== null)
+            throw new RegisterNotFoundException("Não foi possível encontrar o registro no banco de dados.");
+        
+    }
+    
     
 }

@@ -7,12 +7,16 @@ package gui;
 import entities.Motorista;
 import entities.NotaFiscal;
 import entities.ProdutoNotaFiscal;
+import entities.Romaneio;
 import entities.Veiculo;
 import entities.dao.IMotoristaDao;
 import entities.dao.INotaFiscalDao;
 import entities.dao.IProdutoNotaFiscalDao;
+import entities.dao.IRomaneioDao;
 import entities.dao.IVeiculoDao;
+import entities.dao.implementation.EntregaDao;
 import entities.dao.implementation.MotoristaDao;
+import entities.dao.implementation.NotaFiscalDao;
 import entities.dao.implementation.RomaneioDao;
 import entities.dao.implementation.VeiculoDao;
 import gui.enums.EstadoOperacao;
@@ -32,6 +36,7 @@ import javax.swing.table.DefaultTableModel;
  */
 public class FrmCadastrarRomaneio extends javax.swing.JFrame {
     
+    private IRomaneioDao romaneioDao;
     private INotaFiscalDao notaFiscalDao;
     private IProdutoNotaFiscalDao produtoNotaFiscalDao;
     private IVeiculoDao veiculoDao;
@@ -41,11 +46,12 @@ public class FrmCadastrarRomaneio extends javax.swing.JFrame {
     /**
      * Creates new form FrmCadastrarMotorista
      */
-    public FrmCadastrarRomaneio(INotaFiscalDao notaFiscalDao, IProdutoNotaFiscalDao produtoNotaFiscalDao,
+    public FrmCadastrarRomaneio(IRomaneioDao romaneioDao, INotaFiscalDao notaFiscalDao, IProdutoNotaFiscalDao produtoNotaFiscalDao,
                                 IVeiculoDao veiculoDao, IMotoristaDao motoristaDao) {
 	initComponents();
         this.setLocationRelativeTo(null);
         
+        this.romaneioDao = romaneioDao;
         this.notaFiscalDao = notaFiscalDao;
         this.produtoNotaFiscalDao = produtoNotaFiscalDao;
         this.veiculoDao = veiculoDao;
@@ -55,6 +61,41 @@ public class FrmCadastrarRomaneio extends javax.swing.JFrame {
         
         habilitarCampos(false);
         atualizarTabela();
+    }
+    
+    public FrmCadastrarRomaneio(Romaneio romaneio, IRomaneioDao romaneioDao, INotaFiscalDao notaFiscalDao, IProdutoNotaFiscalDao produtoNotaFiscalDao,
+                                IVeiculoDao veiculoDao, IMotoristaDao motoristaDao) {
+	initComponents();
+        this.setLocationRelativeTo(null);
+        
+        this.romaneioDao = romaneioDao;
+        this.notaFiscalDao = notaFiscalDao;
+        this.produtoNotaFiscalDao = produtoNotaFiscalDao;
+        this.veiculoDao = veiculoDao;
+        this.motoristaDao = motoristaDao;
+        
+        this.estadoOperacao = EstadoOperacao.OCIOSO;
+        
+        habilitarCampos(false);
+        atualizarTabela();
+        
+        txtId.setText(String.valueOf(romaneio.getId()));
+        txtPlacaVeiculo.setText(romaneio.getVeiculo().getPlaca());
+        txtIdMotorista.setText(String.valueOf(romaneio.getMotorista().getId()));
+        
+        List<NotaFiscal> notasFiscais = new NotaFiscalDao().findByRomaneioId(romaneio.getId());
+        
+        DefaultListModel<String> lstModel = new DefaultListModel<>();
+        
+        for(int i = 0; i < lstNF.getModel().getSize(); i++) {
+            lstModel.addElement(lstNF.getModel().getElementAt(i));
+        }
+        
+        for(NotaFiscal nf : notasFiscais)
+            lstModel.addElement(String.valueOf(nf.getId()));
+        
+        lstNF.setModel(lstModel);
+                
     }
 
     /**
@@ -219,6 +260,7 @@ public class FrmCadastrarRomaneio extends javax.swing.JFrame {
         lblMotorista.setText("Motorista");
 
         btnDetalhes.setText("Exibir Detalhes");
+        btnDetalhes.setEnabled(false);
         btnDetalhes.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 btnDetalhesActionPerformed(evt);
@@ -340,7 +382,7 @@ public class FrmCadastrarRomaneio extends javax.swing.JFrame {
 
     /**/
     private void btnVoltarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnVoltarActionPerformed
-        new FrmListarRomaneio(new RomaneioDao(new VeiculoDao(), new MotoristaDao())).setVisible(true);
+        new FrmListarRomaneio(new RomaneioDao(new VeiculoDao(), new MotoristaDao()), new EntregaDao(new NotaFiscalDao())).setVisible(true);
         this.dispose();
     }//GEN-LAST:event_btnVoltarActionPerformed
 
@@ -401,58 +443,146 @@ public class FrmCadastrarRomaneio extends javax.swing.JFrame {
             return;
         }
         
-        //Validar o veículo
-        Veiculo veiculo = veiculoDao.findById(txtPlacaVeiculo.getText().toUpperCase());
-        
-        if(veiculo.getPlaca() == null) {
-            JOptionPane.showMessageDialog(this, "Nenhum veículo encontrado com essa placa.");
-            return;
-        }
-        
-        //Validar o motorista
-        Motorista motorista = motoristaDao.findById(Integer.valueOf(txtIdMotorista.getText()));
-        
-        if(motorista.getId() == null) {
-           JOptionPane.showMessageDialog(this, "Nenhum motorista encontrado com esse ID.");
-           return; 
-        }
-        
-        //Validar as notas fiscais (pegar o peso total)
-        List<NotaFiscal> notasFiscais = new ArrayList<>();
-        int quantidadeEmbalagens = 0;
-        NotaFiscal nf;
-        
-        for(int i = 0; i < lstNF.getModel().getSize(); i++) {
-            int id = Integer.valueOf(lstNF.getModel().getElementAt(i));
-            nf = notaFiscalDao.findById(id);
-            
-            List<ProdutoNotaFiscal> itens = produtoNotaFiscalDao.findAll(nf.getId());
-            
-            for(ProdutoNotaFiscal item : itens) {
-                quantidadeEmbalagens += item.getQuantidade();
-                nf.adicionarItem(item);
+        if(txtId.getText() == "") {
+            //Validar o veículo
+            Veiculo veiculo = veiculoDao.findById(txtPlacaVeiculo.getText().toUpperCase());
+
+            if(veiculo.getPlaca() == null) {
+                JOptionPane.showMessageDialog(this, "Nenhum veículo encontrado com essa placa.");
+                return;
             }
-            
-            notasFiscais.add(nf);
+
+            //Validar o motorista
+            Motorista motorista = motoristaDao.findById(Integer.valueOf(txtIdMotorista.getText()));
+
+            if(motorista.getId() == null) {
+               JOptionPane.showMessageDialog(this, "Nenhum motorista encontrado com esse ID.");
+               return; 
+            }
+
+            //Validar as notas fiscais (pegar o peso total)
+            List<NotaFiscal> notasFiscais = new ArrayList<>();
+            int quantidadeEmbalagens = 0;
+            NotaFiscal nf;
+
+            for(int i = 0; i < lstNF.getModel().getSize(); i++) {
+                int id = Integer.valueOf(lstNF.getModel().getElementAt(i));
+                nf = notaFiscalDao.findById(id);
+
+                List<ProdutoNotaFiscal> itens = produtoNotaFiscalDao.findAll(nf.getId());
+
+                for(ProdutoNotaFiscal item : itens) {
+                    quantidadeEmbalagens += item.getQuantidade();
+                    nf.adicionarItem(item);
+                }
+
+                notasFiscais.add(nf);
+            }
+
+            //Validar se o veículo suporta
+            if(veiculo.getCapacidade() < quantidadeEmbalagens) {
+                JOptionPane.showMessageDialog(this, """
+                                                    Este ve\u00edculo n\u00e3o suporta essa quantidade de embalagens!
+                                                    Diminua a quantidade de notas fiscais ou selecione um ve\u00edculo com maior capacidade.""");
+                return;
+            }
+
+            Romaneio romaneio = new Romaneio();
+            romaneio.setMotorista(motorista);
+            romaneio.setVeiculo(veiculo);
+            Integer idNovoRomaneio = romaneioDao.insert(romaneio);
+            romaneio.setId(idNovoRomaneio);
+
+            for(int i = 0; i < lstNF.getModel().getSize(); i++) {
+                int id = Integer.valueOf(lstNF.getModel().getElementAt(i));
+                nf = notaFiscalDao.findById(id);
+
+                List<ProdutoNotaFiscal> itens = produtoNotaFiscalDao.findAll(nf.getId());
+
+                for(ProdutoNotaFiscal item : itens) {
+                    nf.adicionarItem(item);
+                }
+
+                nf.setRomaneio(romaneio);
+
+                notaFiscalDao.update(nf);
+            }
+
+            //Após inserir
+            JOptionPane.showMessageDialog(this, "Registro inserido com sucesso!");
+            new FrmListarRomaneio(new RomaneioDao(new VeiculoDao(), new MotoristaDao()), new EntregaDao(new NotaFiscalDao())).setVisible(true);
+            this.dispose();
+        } else {
+            //Validar o veículo
+            Veiculo veiculo = veiculoDao.findById(txtPlacaVeiculo.getText().toUpperCase());
+
+            if(veiculo.getPlaca() == null) {
+                JOptionPane.showMessageDialog(this, "Nenhum veículo encontrado com essa placa.");
+                return;
+            }
+
+            //Validar o motorista
+            Motorista motorista = motoristaDao.findById(Integer.valueOf(txtIdMotorista.getText()));
+
+            if(motorista.getId() == null) {
+               JOptionPane.showMessageDialog(this, "Nenhum motorista encontrado com esse ID.");
+               return; 
+            }
+
+            //Validar as notas fiscais (pegar o peso total)
+            List<NotaFiscal> notasFiscais = new ArrayList<>();
+            int quantidadeEmbalagens = 0;
+            NotaFiscal nf;
+
+            for(int i = 0; i < lstNF.getModel().getSize(); i++) {
+                int id = Integer.valueOf(lstNF.getModel().getElementAt(i));
+                nf = notaFiscalDao.findById(id);
+
+                List<ProdutoNotaFiscal> itens = produtoNotaFiscalDao.findAll(nf.getId());
+
+                for(ProdutoNotaFiscal item : itens) {
+                    quantidadeEmbalagens += item.getQuantidade();
+                    nf.adicionarItem(item);
+                }
+
+                notasFiscais.add(nf);
+            }
+
+            //Validar se o veículo suporta
+            if(veiculo.getCapacidade() < quantidadeEmbalagens) {
+                JOptionPane.showMessageDialog(this, """
+                                                    Este ve\u00edculo n\u00e3o suporta essa quantidade de embalagens!
+                                                    Diminua a quantidade de notas fiscais ou selecione um ve\u00edculo com maior capacidade.""");
+                return;
+            }
+
+            Romaneio romaneio = new Romaneio();
+            romaneio.setMotorista(motorista);
+            romaneio.setVeiculo(veiculo);
+            //Integer idNovoRomaneio = romaneioDao.insert(romaneio);
+            romaneio.setId(Integer.valueOf(txtId.getText()));
+            romaneioDao.update(romaneio);
+
+            for(int i = 0; i < lstNF.getModel().getSize(); i++) {
+                int id = Integer.valueOf(lstNF.getModel().getElementAt(i));
+                nf = notaFiscalDao.findById(id);
+
+                List<ProdutoNotaFiscal> itens = produtoNotaFiscalDao.findAll(nf.getId());
+
+                for(ProdutoNotaFiscal item : itens) {
+                    nf.adicionarItem(item);
+                }
+
+                nf.setRomaneio(romaneio);
+
+                notaFiscalDao.update(nf);
+            }
+
+            //Após inserir
+            JOptionPane.showMessageDialog(this, "Registro alterado com sucesso!");
+            new FrmListarRomaneio(new RomaneioDao(new VeiculoDao(), new MotoristaDao()), new EntregaDao(new NotaFiscalDao())).setVisible(true);
+            this.dispose();
         }
-        
-        //Validar se o veículo suporta
-        if(veiculo.getCapacidade() < quantidadeEmbalagens) {
-            JOptionPane.showMessageDialog(this, """
-                                                Este ve\u00edculo n\u00e3o suporta essa quantidade de embalagens!
-                                                Diminua a quantidade de notas fiscais ou selecione um ve\u00edculo com maior capacidade.""");
-            return;
-        }
-        
-        //Inserir (precisa inserir nova entrega aqui? = Não, ela já deve estar mockada com as NFS)
-        //Precisa do RomaneioDao
-        
-        //Atualizar o campo romaneio das notas fiscais
-        
-        //Após inserir
-        JOptionPane.showMessageDialog(this, "Registro inserido com sucesso!");
-        new FrmListarRomaneio(new RomaneioDao(new VeiculoDao(), new MotoristaDao())).setVisible(true);
-        this.dispose();
     }//GEN-LAST:event_btnGravarActionPerformed
 
     private void btnAdicionarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnAdicionarActionPerformed

@@ -4,18 +4,22 @@
  */
 package gui;
 
-import entities.Motorista;
+import entities.Entrega;
+import entities.NotaFiscal;
 import entities.Romaneio;
-import entities.dao.IMotoristaDao;
-import entities.dao.IProdutoNotaFiscalDao;
+import entities.dao.IEntregaDao;
 import entities.dao.IRomaneioDao;
+import entities.dao.implementation.EntregaDao;
 import entities.dao.implementation.MotoristaDao;
 import entities.dao.implementation.NotaFiscalDao;
 import entities.dao.implementation.ProdutoDao;
 import entities.dao.implementation.ProdutoNotaFiscalDao;
+import entities.dao.implementation.RomaneioDao;
 import entities.dao.implementation.VeiculoDao;
+import entities.enums.EstadoEntrega;
 import gui.enums.EstadoOperacao;
 import gui.utils.Utils;
+import java.util.ArrayList;
 import java.util.List;
 import javax.swing.JOptionPane;
 import javax.swing.table.DefaultTableModel;
@@ -27,12 +31,13 @@ import javax.swing.table.DefaultTableModel;
 public class FrmListarRomaneio extends javax.swing.JFrame {
 
     private IRomaneioDao romaneioDao;
+    private IEntregaDao entregaDao;
     private EstadoOperacao estadoOperacao;
     
     /**
      * Creates new form FrmCadastrarMotorista
      */
-    public FrmListarRomaneio(IRomaneioDao romaneioDao) {
+    public FrmListarRomaneio(IRomaneioDao romaneioDao, IEntregaDao entregaDao) {
 	initComponents();
         this.setLocationRelativeTo(null);
         
@@ -178,6 +183,7 @@ public class FrmListarRomaneio extends javax.swing.JFrame {
         });
 
         btnRastrear.setText("Rastrear Romaneio");
+        btnRastrear.setEnabled(false);
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
@@ -250,11 +256,30 @@ public class FrmListarRomaneio extends javax.swing.JFrame {
     }//GEN-LAST:event_btnVoltarActionPerformed
 
     private void btnPesquisarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnPesquisarActionPerformed
+        DefaultTableModel model = (DefaultTableModel) tblRomaneios.getModel();
+        Utils.limparTabela(model);
         
+        int id;
+        try {
+            id = Integer.parseInt(txtPesquisar.getText());
+        } catch (NumberFormatException e) {
+             return;
+        }
+        
+        Romaneio obj = romaneioDao.findById(id);
+        
+        if(obj.getId() == null)
+            return;
+        
+        model.addRow(new String[] {
+            String.valueOf(obj.getId()),
+            obj.getMotorista().getNome(),
+            "pendente"
+        });
     }//GEN-LAST:event_btnPesquisarActionPerformed
 
     private void btnIncluirActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnIncluirActionPerformed
-        new FrmCadastrarRomaneio(new NotaFiscalDao(),
+        new FrmCadastrarRomaneio(new RomaneioDao(new VeiculoDao(), new MotoristaDao()), new NotaFiscalDao(),
                                     new ProdutoNotaFiscalDao(new ProdutoDao(), new NotaFiscalDao()),
                                     new VeiculoDao(),
                                     new MotoristaDao())
@@ -263,11 +288,50 @@ public class FrmListarRomaneio extends javax.swing.JFrame {
     }//GEN-LAST:event_btnIncluirActionPerformed
 
     private void btnAlterarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnAlterarActionPerformed
+        DefaultTableModel model = (DefaultTableModel) tblRomaneios.getModel();
+        
+        if(tblRomaneios.getSelectedRow() == -1){
+            JOptionPane.showMessageDialog(this, "Primeiro, selecione um registro na tabela.");
+            return;
+        }
+        
+        int id = Integer.parseInt(String.valueOf(model.getValueAt(tblRomaneios.getSelectedRow(), 0)));
+        
+        var romaneio = romaneioDao.findById(id);
+        
+        new FrmCadastrarRomaneio(romaneio, new RomaneioDao(new VeiculoDao(), new MotoristaDao()), new NotaFiscalDao(),
+                                    new ProdutoNotaFiscalDao(new ProdutoDao(), new NotaFiscalDao()),
+                                    new VeiculoDao(),
+                                    new MotoristaDao())
+                                    .setVisible(true);
+        this.dispose();
         
     }//GEN-LAST:event_btnAlterarActionPerformed
 
     private void btnExcluirActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnExcluirActionPerformed
+        DefaultTableModel model = (DefaultTableModel) tblRomaneios.getModel();
         
+        if(tblRomaneios.getSelectedRow() == -1){
+            JOptionPane.showMessageDialog(this, "Primeiro, selecione um registro na tabela.");
+            return;
+        }
+        
+        int id = Integer.parseInt(String.valueOf(model.getValueAt(tblRomaneios.getSelectedRow(), 0)));
+        
+        if(JOptionPane.showConfirmDialog(this, "Deseja excluir o romaneio de id " + id + "?", "Excluir", JOptionPane.YES_NO_OPTION) == JOptionPane.YES_OPTION) {
+            List<NotaFiscal> notasDoRomaneio = new NotaFiscalDao().findByRomaneioId(id);
+            
+            var romaneioNulo = new Romaneio();
+            romaneioNulo.setId(null);
+            
+            for(NotaFiscal nf : notasDoRomaneio) {
+                nf.setRomaneio(romaneioNulo);
+                new NotaFiscalDao().update(nf);
+            }
+            romaneioDao.delete(id);
+            JOptionPane.showMessageDialog(this, "O registro foi removido.");
+            atualizarTabela();
+        }
     }//GEN-LAST:event_btnExcluirActionPerformed
 
     private void btnCancelarPesquisaActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnCancelarPesquisaActionPerformed
@@ -300,10 +364,27 @@ public class FrmListarRomaneio extends javax.swing.JFrame {
         List<Romaneio> romaneios = romaneioDao.findAll();
         
         for(Romaneio romaneio : romaneios) {
+            
+            List<NotaFiscal> nfs = new NotaFiscalDao().findByRomaneioId(romaneio.getId());
+            List<Entrega> entregas = new ArrayList<>();
+            
+            for(NotaFiscal nf : nfs) {
+                entregas.add(new EntregaDao(new NotaFiscalDao()).findById(nf.getId()));
+            }
+            
+            String estado = "finalizado";
+            
+            for(Entrega entrega : entregas) {
+                if(entrega.getEstadoEntrega() == EstadoEntrega.NAO_ENTREGUE) {
+                    estado = "pendente";
+                    break;
+                }
+            }
+            
             model.addRow(new String[] {
                 String.valueOf(romaneio.getId()),
                 String.valueOf(romaneio.getMotorista().getNome()),
-                "fodase"
+                estado
             });
         }
     }

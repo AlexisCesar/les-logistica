@@ -4,6 +4,8 @@
  */
 package gui;
 
+import javax.swing.JOptionPane;
+
 /**
  *
  * @author Yo
@@ -15,6 +17,8 @@ public class frmHistoricoEntregas extends javax.swing.JFrame {
      */
     public frmHistoricoEntregas() {
 	initComponents();
+        
+        this.setLocationRelativeTo(null);
     }
 
     /**
@@ -186,40 +190,7 @@ public class frmHistoricoEntregas extends javax.swing.JFrame {
     }//GEN-LAST:event_btnDetalhesActionPerformed
 
     private void btnPesquisarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnPesquisarActionPerformed
-        DefaultTableModel model = (DefaultTableModel) tblNF.getModel();
-        Utils.limparTabela(model);
-
-        int id;
-        try {
-            id = Integer.parseInt(txtPesquisar.getText());
-        } catch (NumberFormatException e) {
-            JOptionPane.showMessageDialog(this, "Insira um número de ID válido!", "Erro", JOptionPane.ERROR_MESSAGE);
-            return;
-        }
-
-        NotaFiscal nf = notaFiscalDao.findById(id);
-
-        if(nf.getId() == null)
-        return;
-
-        double valorTotal = 0f;
-        int quantidadeEmbalagens = 0;
-
-        List<ProdutoNotaFiscal> itens = produtoNotaFiscalDao.findAll(nf.getId());
-
-        for(ProdutoNotaFiscal item : itens) {
-            valorTotal += item.getQuantidade() * item.getProduto().getValor();
-            quantidadeEmbalagens += item.getQuantidade();
-        }
-
-        model.addRow(new String[] {
-            String.valueOf(nf.getId()),
-            nf.getCliente().getNome(),
-            new SimpleDateFormat("dd/MM/yyyy").format(Date.from(nf.getDataEmissao())),
-            String.valueOf(new DecimalFormat("#,##0.00").format(valorTotal)),
-            String.valueOf(quantidadeEmbalagens),
-            "Não"
-        });
+ 
     }//GEN-LAST:event_btnPesquisarActionPerformed
 
     private void btnCancelarPesquisaActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnCancelarPesquisaActionPerformed
@@ -231,41 +202,6 @@ public class frmHistoricoEntregas extends javax.swing.JFrame {
         new FrmMenu().setVisible(true);
         this.dispose();
     }//GEN-LAST:event_btnVoltarActionPerformed
-
-    /**
-     * @param args the command line arguments
-     */
-    public static void main(String args[]) {
-	/* Set the Nimbus look and feel */
-	//<editor-fold defaultstate="collapsed" desc=" Look and feel setting code (optional) ">
-	/* If Nimbus (introduced in Java SE 6) is not available, stay with the default look and feel.
-         * For details see http://download.oracle.com/javase/tutorial/uiswing/lookandfeel/plaf.html 
-	 */
-	try {
-	    for (javax.swing.UIManager.LookAndFeelInfo info : javax.swing.UIManager.getInstalledLookAndFeels()) {
-		if ("Nimbus".equals(info.getName())) {
-		    javax.swing.UIManager.setLookAndFeel(info.getClassName());
-		    break;
-		}
-	    }
-	} catch (ClassNotFoundException ex) {
-	    java.util.logging.Logger.getLogger(frmHistoricoEntregas.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
-	} catch (InstantiationException ex) {
-	    java.util.logging.Logger.getLogger(frmHistoricoEntregas.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
-	} catch (IllegalAccessException ex) {
-	    java.util.logging.Logger.getLogger(frmHistoricoEntregas.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
-	} catch (javax.swing.UnsupportedLookAndFeelException ex) {
-	    java.util.logging.Logger.getLogger(frmHistoricoEntregas.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
-	}
-	//</editor-fold>
-
-	/* Create and display the form */
-	java.awt.EventQueue.invokeLater(new Runnable() {
-	    public void run() {
-		new frmHistoricoEntregas().setVisible(true);
-	    }
-	});
-    }
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton btnCancelarPesquisa;

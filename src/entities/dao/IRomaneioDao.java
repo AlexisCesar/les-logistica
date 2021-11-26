@@ -14,7 +14,7 @@ import java.util.List;
  */
 public interface IRomaneioDao {
     
-    void insert(Romaneio romaneio);
+    Integer insert(Romaneio romaneio);
     Romaneio findById(Integer id);
     List<Romaneio> findAll();
     void update(Romaneio romaneio);
